@@ -20,7 +20,7 @@ pidfile="/var/chef/run/$prog.pid"
 
 var=$(ps -ef | grep $prog_sensu | grep -v grep | wc -l)
 pid=$(ps -ef | grep $prog_sensu |grep -v grep | awk '{print $2}')
-CPID=`cat $pidfile 2>/dev/null`
+CPID=$(cat $pidfile)
 CPID_FILE="/proc/$CPID"
 pid_id_file="/proc/$pid"
 
@@ -76,6 +76,7 @@ status()
 	fi
 }
 
+<% unless node["platform"] == "aix" %>
 stop_sensu()
 {
 	if [ $var = 0 ]; then
@@ -86,19 +87,23 @@ stop_sensu()
 		rm -f $logfile
 	fi
 }
+<% else %>
+stop_sensu()
+{
+	if [ -f $pidfile ]; then
+		echo "$prog stopped"
+		kill -9 $CPID &&
+		rm -f $logfile
+	else
+		echo "$prog not running"
+	fi
+}
+<% end %>
 
 restart_sensu() {
-	if [ $var = 0 ]; then
-		echo "$prog start"
-		$prog -b -l $logfile
-	else
-		echo "$prog stoped"
-		kill -9 $pid &&
-		rm -f $logfile 
-		sleep 2
-		echo "$prog start"
-		$prog -b -l $logfile
-	fi
+	stop_sensu
+	sleep 2
+	start
 }
 
 case $1 in
