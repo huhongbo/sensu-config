@@ -38,6 +38,7 @@ sensu_dir = "/etc/sensu"
 template "#{sensu_dir}/conf.d/client.json" do
   source "client.json.erb"
   mode 0644
+  notifies :restart, "service[sensu_client]", :delayed
 end
 
 sensu_config = data_bag('sensu-config')
@@ -48,32 +49,16 @@ sensu_config.each do |sensu|
   unless sensu == "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
+      notifies :restart, "service[sensu_client]", :delayed
     end
   else
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
+      notifies :restart, "service[sensu_client]", :delayed
     end
   end
 end
- 
-=begin
-template "/etc/sensu/config.json" do
-  source "config.json.erb"
-  mode 0644
-end
-template "/etc/sensu/conf.d/client.json" do
-  source "conf.d/client.json.erb"
-  mode 0644
-end
-
-node["conf_json"].each do |conf|
-    template "#{sensu_dir}/conf.d/#{conf}" do
-      source "conf.d/#{conf}.erb"
-      mode 0644
-    end
-end
-=end
- 
+  
 node["plugin_files"].each do |pluginfile|
   cookbook_file "/etc/sensu/plugins/#{pluginfile}" do
     source "plugins/#{pluginfile}"
