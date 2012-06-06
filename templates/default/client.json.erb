@@ -1,0 +1,17 @@
+{
+  "client": {
+    "name": "<%= node.hostname %>",
+    "address": "<%= node.ipaddress %>",
+    "subscriptions": [
+	  "load_check",
+	<% case node["platform"] %>
+		<% when "ubuntu" %>
+		"linux"
+		<% when "aix" %>
+		"aix"
+		<% when "hpux" %>
+		"hpux"
+	<% end %>
+    ]
+  }
+}
