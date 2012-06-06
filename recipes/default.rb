@@ -52,7 +52,8 @@ sensu_config.each do |sensu|
       unless node.hostname == "pc-mon02"
         notifies :restart, "service[sensu_client]", :delayed
       else
-        notifies :restart, "service[sensu_client]", "service[sensu_server]", :delayed
+        notifies :restart, "service[sensu_client]",  :delayed
+        notifies :restart, "service[sensu_server]", :delayed
       end
     end
   else
@@ -61,7 +62,8 @@ sensu_config.each do |sensu|
       unless node.hostname == "pc-mon02"
         notifies :restart, "service[sensu_client]", :delayed
       else
-        notifies :restart, "service[sensu_client]", "service[sensu_server]", :sdelayed
+        notifies :restart, "service[sensu_client]",  :delayed
+        notifies :restart, "service[sensu_server]", :delayed
       end
     end
   end
