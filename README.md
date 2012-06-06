@@ -1,12 +1,9 @@
 Description
 ===========
+Chef a cookbook sensu client config file, graphite monitoring script
 
-Requirements
+
+Examples File
 ============
-
-Attributes
-==========
-
-Usage
-=====
+data bag files: some json config files
 
