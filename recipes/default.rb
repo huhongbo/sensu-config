@@ -49,12 +49,20 @@ sensu_config.each do |sensu|
   unless sensu == "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
+      unless node.hostname == "pc-mon02"
+        notifies :restart, "service[sensu_client]", :delayed
+      else
+        notifies :restart, "service[sensu_client]", "service[sensu_server]" :delayed
+      end
     end
   else
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
+      unless node.hostname == "pc-mon02"
+        notifies :restart, "service[sensu_client]", :delayed
+      else
+        notifies :restart, "service[sensu_client]", "service[sensu_server]" :delayed
+      end
     end
   end
 end
@@ -88,6 +96,12 @@ pattern_conf = value_for_platform(
 ["hpux", "ubuntu"] => {"default" => "sensu-client"},
 "default" => "sensu-client"
 )
+
+if node.hostname == "pc-mon02"
+  server "sensu_server" do
+    action :start
+  end
+end
 
 service "sensu_client" do
   if (platform?("hpux"))
