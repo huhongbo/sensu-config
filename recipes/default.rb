@@ -38,7 +38,7 @@ sensu_dir = "/etc/sensu"
 template "#{sensu_dir}/conf.d/client.json" do
   source "client.json.erb"
   mode 0644
-  notifies :restart, resources(:service => "sensu_client"), :delayed
+  notifies :restart, "service[sensu_client]", :delayed
 end
 
 sensu_config = data_bag('sensu-config')
@@ -49,12 +49,12 @@ sensu_config.each do |sensu|
   unless sensu == "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
-      notifies :restart, resources(:service => "sensu_client"), :delayed
+      notifies :restart, "service[sensu_client]", :delayed
     end
   else
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :restart, resources(:service => "sensu_client"), :delayed
+      notifies :restart, "service[sensu_client]", :delayed
     end
   end
 end
