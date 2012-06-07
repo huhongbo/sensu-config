@@ -34,7 +34,8 @@ class VMStat < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   def run
-    pid = File.open("/var/run/sensu-client.pid", "r").read.to_i
+    #pid = File.open("/var/run/sensu-client.pid", "r").read.to_i
+    pid = `ps -ef | grep sensu-client|grep -v grep|awk '{print $2}'`.to_i
     result = convert_integers(`pmap #{pid}|tail -2|head -1`.lstrip.split.join("").split("M"))
     #result = `pmap #{pid}|tail -2|head -1`.lstrip.split.join("").split("M")
     timestamp = Time.now.to_i
