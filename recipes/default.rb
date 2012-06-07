@@ -38,7 +38,7 @@ sensu_dir = "/etc/sensu"
 template "#{sensu_dir}/conf.d/client.json" do
   source "client.json.erb"
   mode 0644
-  notifies :restart, "service[sensu_client]", :delayed
+  notifies :restart, resources(:service => "sensu_client"), :delayed
 end
 
 sensu_config = data_bag('sensu-config')
@@ -50,21 +50,12 @@ sensu_config.each do |sensu|
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
       unless node.hostname == "pc-mon02"
-        notifies :restart, "service[sensu_client]", :delayed
-      else
-        notifies :restart, "service[sensu_client]",  :delayed
-        notifies :restart, "service[sensu_server]", :delayed
-      end
+        notifies :restart, resources(:service => "sensu_client"), :delayed
     end
   else
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      unless node.hostname == "pc-mon02"
-        notifies :restart, "service[sensu_client]", :delayed
-      else
-        notifies :restart, "service[sensu_client]",  :delayed
-        notifies :restart, "service[sensu_server]", :delayed
-      end
+        notifies :restart, resources(:service => "sensu_client"), :delayed
     end
   end
 end
@@ -98,12 +89,6 @@ pattern_conf = value_for_platform(
 ["hpux", "ubuntu"] => {"default" => "sensu-client"},
 "default" => "sensu-client"
 )
-
-if node.hostname == "pc-mon02"
-  server "sensu_server" do
-    action :start
-  end
-end
 
 service "sensu_client" do
   if (platform?("hpux"))
