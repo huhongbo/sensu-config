@@ -49,13 +49,12 @@ sensu_config.each do |sensu|
   unless sensu == "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
-      unless node.hostname == "pc-mon02"
-        notifies :restart, resources(:service => "sensu_client"), :delayed
+      notifies :restart, resources(:service => "sensu_client"), :delayed
     end
   else
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-        notifies :restart, resources(:service => "sensu_client"), :delayed
+      notifies :restart, resources(:service => "sensu_client"), :delayed
     end
   end
 end
