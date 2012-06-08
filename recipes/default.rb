@@ -15,7 +15,8 @@ root_group = value_for_platform(
 directory "/etc/sensu" do
   action :create
 end
-if node["pratform"] == "aix"
+
+if node["os"] == "aix"
   directory "/var/chef/run" do
     owner "root"
     group "system"
