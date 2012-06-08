@@ -34,13 +34,11 @@ class VMStat < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   def run
-    pspid = `ps -ef | grep sensu-client|grep -v grep|awk '{print $2}'`.to_i
+    pspid = `ps -ef | grep sensu-client|grep -v grep|awk '{print $2}'`.lstrip
     pid = File.open("/var/run/sensu-client.pid", "r").read.to_i
     
     if pspid != pid
-      pid_w = File.open("/var/run/sensu-client.pid","w")
-      pid_w.write(pid)
-      pid_w.close
+      File.open("/var/run/sensu-client.pid","w").write(pspid)
     end
       
     result = convert_integers(`pmap #{pid}|tail -2|head -1`.lstrip.split.join("").split("M"))
