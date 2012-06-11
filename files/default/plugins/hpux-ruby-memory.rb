@@ -50,12 +50,17 @@ class VMStat < Sensu::Plugin::Metric::CLI::Graphite
         :rsz_total => result[1]
        }
     }
+    
+    if metrics[:ruby_memory][:vsz_total].to_i > 150 || metrics[:ruby_memory][:rsz_total].to_i > 100
+      `/sbin/init.d/sensu_client restart`
+    end
+        
     metrics.each do |parent, children|
-      children.each do |child, value|
+      children.each do |child, value|      
         output [config[:scheme], parent, child].join("."), value, timestamp
       end
     end
-    ok
+    ok    
   end
 
 end
