@@ -34,7 +34,7 @@ class VMStat < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   def run
-    pspid = `ps -ef | grep sensu-client|grep -v grep|awk '{print $2}'`.lstrip
+    pspid = `ps -ef | grep sensu-client|grep -v grep|grep pid|awk '{print $2}'`.lstrip
     pid = File.open("/var/run/sensu-client.pid", "r").read.to_i
     
     if pspid != pid
