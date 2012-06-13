@@ -3,7 +3,7 @@
     "name": "<%= node.hostname %>",
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
-	  "load_check",
+	  "check_default",
 	<% case node["platform"] %>
 		<% when "ubuntu" %>
 		"linux"

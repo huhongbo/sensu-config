@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# network interface
+# code dn365
+
 require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'sensu-plugin/metric/cli'
 require 'socket'
@@ -58,9 +61,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
               output [config[:scheme],name,child].join("."), value, timestamp
             end
           end
-
         end
       end
   end
-
 end

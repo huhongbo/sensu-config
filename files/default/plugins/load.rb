@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# System VMStat Plugin
+# System load Plugin
 # ===
 # code dn365
 
