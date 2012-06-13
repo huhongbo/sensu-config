@@ -22,6 +22,7 @@ class MemoryGraphite < Sensu::Plugin::Metric::CLI::Graphite
     sigar = Sigar.new
     mem = sigar.mem
     swap = sigar.swap
+    dname = "memory"
 
     mate = {
       :memory => {
@@ -42,7 +43,7 @@ class MemoryGraphite < Sensu::Plugin::Metric::CLI::Graphite
     #puts mate
     mate.each do |name,key|
       key.each do |child,value|
-        output [config[:scheme],name,child].join("."), value, timestamp
+        output [config[:scheme],dname,name,child].join("."), value, timestamp
       end
     end
     ok

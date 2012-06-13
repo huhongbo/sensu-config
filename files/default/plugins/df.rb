@@ -17,7 +17,8 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
     :default => "#{Socket.gethostname}.filesystem"
 
   def run
-
+    
+    dname = "filesystem"
     sigar = Sigar.new
     sigar.file_system_list.each do |fs|
       file_name = fs.dev_name.split("/")
@@ -41,7 +42,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
       mate.each do |name, key|
        key.each do |child, value|
           #puts name
-          output [config[:scheme],name,child].join("."), value, timestamp
+          output [config[:scheme],dname,name,child].join("."), value, timestamp
         end
       end
       #ok

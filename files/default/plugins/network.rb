@@ -17,6 +17,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
     :default => "#{Socket.gethostname}.interface"
 
   def run
+    dname = "interface"
 
     sigar = Sigar.new
       iflist = sigar.net_interface_list
@@ -58,7 +59,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
 
           mate.each do |name, key|
             key.each do |child, value|
-              output [config[:scheme],name,child].join("."), value, timestamp
+              output [config[:scheme],dname,name,child].join("."), value, timestamp
             end
           end
         end
