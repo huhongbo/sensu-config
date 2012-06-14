@@ -45,10 +45,8 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
           output [config[:scheme],dname,name,child].join("."), value, timestamp
         end
       end
-      #ok
-
     end
-
+    ok
   end
 
 end

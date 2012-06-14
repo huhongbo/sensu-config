@@ -64,5 +64,6 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
           end
         end
       end
+      ok
   end
 end
