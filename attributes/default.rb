@@ -4,4 +4,4 @@ default["plugin_files"] = ["vmstat-metrics-aix.rb", "df.rb",
   "network.rb", "vmstat-metrics.rb", "disk-metrics.rb", "memory.rb", 
   "load.rb", "vmstat-metrics-hpux.rb", "hpux-ruby-memory.rb"]
   
-default["handler_files"] = ["file.rb", "stdout.rb"]
+default["handler_files"] = ["client-log_del.rb"]

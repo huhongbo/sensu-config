@@ -35,6 +35,10 @@ end
   end
 end
 
+directory "/etc/sensu/plugins/system" do
+  action :create
+end
+
 sensu_dir = "/etc/sensu"
 template "#{sensu_dir}/conf.d/client.json" do
   source "client.json.erb"
@@ -61,8 +65,8 @@ sensu_config.each do |sensu|
 end
   
 node["plugin_files"].each do |pluginfile|
-  cookbook_file "/etc/sensu/plugins/#{pluginfile}" do
-    source "plugins/#{pluginfile}"
+  cookbook_file "/etc/sensu/plugins/system/#{pluginfile}" do
+    source "plugins/system/#{pluginfile}"
     mode 775
   end
 end
