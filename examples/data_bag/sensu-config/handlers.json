@@ -1,1 +1,1 @@
-{"id":"handlers","handlers":{"default":{"type":"set","handlers":["stdout"]},"del_log":{"type":"pipe","command":"/etc/sensu/handlers/clinet-log_del.rb"},"graphite":{"type":"amqp","exchange":{"type":"topic","name":"graphite","passive":"true"},"send_only_check_output":true}}}
+{"id":"handlers","handlers":{"default":{"type":"set","handlers":["del_log"]},"del_log":{"type":"pipe","command":"/etc/sensu/handlers/clinet-log_del.rb"},"graphite":{"type":"amqp","exchange":{"type":"topic","name":"graphite","passive":"true"},"send_only_check_output":true}}}
