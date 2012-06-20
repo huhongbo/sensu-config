@@ -4,6 +4,7 @@
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
 	  "check_default",
+	  "del_log",
 	<% case node["platform"] %>
 		<% when "ubuntu" %>
 		"linux"
