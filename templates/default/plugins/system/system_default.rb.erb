@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# system default plugin
+
+# code dn365
+
+require 'rubygems' if RUBY_VERSION < '1.9.0'
+require 'sensu-plugin/metric/cli'
+require 'socket'
+require 'sigar'
+
+class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
+
+  option :scheme,
+    :description => "Metric naming scheme, text to prepend to metric",
+    :short => "-s SCHEME",
+    :long => "--scheme SCHEME",
+    :default => "#{Socket.gethostname}.system.system"
+    
+  def sprintf_int(num)
+    sprintf("%.0f", num*100)
+  end
+
+  def run
+    dname = "system"   
+    sigar = Sigar.new
+
+    cpu, mem, swap = sigar.cpu, sigar.mem, sigar.swap     
+    cpu_user, cpu_sys, cpu_idle, cpu_wait, cpu_total = cpu.user, cpu.sys, cpu.idle, cpu.wait, cpu.total   
+    sleep 1
+    
+    cpu_total = sigar.cpu.total - cpu_total
+    cpu_user = (sigar.cpu.user - cpu_user).to_f / cpu_total
+    cpu_sys = (sigar.cpu.sys - cpu_sys).to_f / cpu_total
+    cpu_idle = (sigar.cpu.idle - cpu_idle).to_f / cpu_total
+    cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
+    
+    memory_used = mem.used.to_f / mem.total.to_f
+    memory_sys = (mem.used - mem.actual_used).to_f / mem.total.to_f
+    swap_used = swap.used.to_f / swap.total.to_f
+    
+    timestamp = Time.now.to_i
+    metrics = {
+      :cpu => {
+        :user => sprintf_int(cpu_user),
+        :sys =>  sprintf_int(cpu_sys),
+        :idle => sprintf_int(cpu_idle),
+        :wait => sprintf_int(cpu_wait) 
+      },
+      :memory => {
+        :mem_used => sprintf_int(memory_used),
+        :mem_sys => sprintf_int(memory_sys),
+        :swap_used => sprintf_int(swap_used)
+      }
+    }
+        
+    metrics.each do |parent, children|
+      children.each do |child, value|
+        output [config[:scheme], dname, parent, child].join("."), value, timestamp
+      end
+    end
+    ok  
+  end
+end

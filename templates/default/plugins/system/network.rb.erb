@@ -17,7 +17,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
     :default => "#{Socket.gethostname}.interface"
 
   def run
-    dname = "interface"
+    dname = "system.interface"
 
     sigar = Sigar.new
       iflist = sigar.net_interface_list
@@ -33,30 +33,17 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
 
         if (!ifname.include?(":"))
           ifstat = sigar.net_interface_stat(ifname)
-
+          
           rx_bytes = ifstat.rx_bytes
           tx_bytes = ifstat.tx_bytes
 
           mate = {
               ifname =>{
-                  :rx_Packets => ifstat.rx_packets.to_i,
-                  :rx_Errors => ifstat.rx_errors.to_i,
-                  :rx_Drops => ifstat.rx_dropped.to_i,
-                  :rx_Overruns => ifstat.rx_overruns.to_i,
-                  :rx_Frame => ifstat.rx_frame.to_i,
                   :rx_Bytes => rx_bytes.to_i,
-                  :tx_Packets => ifstat.tx_packets.to_i,
-                  :tx_Errors => ifstat.tx_errors.to_i,
-                  :tx_Drops => ifstat.tx_dropped.to_i,
-                  :tx_Overruns => ifstat.tx_overruns.to_i,
-                  :tx_Carrier => ifstat.tx_carrier.to_i,
-                  :tx_Collisions => ifstat.tx_collisions.to_i,
                   :tx_Bytes => tx_bytes.to_i
               }
           }
-
           timestamp = Time.now.to_i
-
           mate.each do |name, key|
             key.each do |child, value|
               output [config[:scheme],dname,name,child].join("."), value, timestamp
