@@ -34,6 +34,7 @@ class RubyMemory < Sensu::Plugin::Metric::CLI::Graphite
   end
 
   def run
+    dname = "system"
     pspid = `ps -ef | grep sensu-client|grep -v grep|grep pid|awk '{print $2}'`.lstrip
     pid = File.open("/var/run/sensu-client.pid", "r").read.to_i
     
@@ -57,7 +58,7 @@ class RubyMemory < Sensu::Plugin::Metric::CLI::Graphite
         
     metrics.each do |parent, children|
       children.each do |child, value|      
-        output [config[:scheme], parent, child].join("."), value, timestamp
+        output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, parent, child].join("."), value, timestamp
       end
     end
     ok    
