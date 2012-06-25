@@ -15,12 +15,12 @@ require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'sensu-plugin/metric/cli'
 require 'socket'
 
-class VMStat < Sensu::Plugin::Metric::CLI::Graphite
+class RubyMemory < Sensu::Plugin::Metric::CLI::Graphite
 
   option :scheme,
     :description => "Metric naming scheme, text to prepend to .$parent.$child",
     :long => "--scheme SCHEME",
-    :default => "#{Socket.gethostname}.vmstat"
+    :default => "#{Socket.gethostname}.rubymemory"
 
   def convert_integers(values)
     values.each_with_index do |value, index|

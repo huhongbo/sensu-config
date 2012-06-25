@@ -1,1 +1,74 @@
-{"id":"graphite","checks":{"linux":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/vmstat-metrics.rb --scheme stats.:::name:::","subscribers":["linux"],"interval":10},"check_default":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/network.rb --scheme stats.:::name:::","subscribers":["check_default"],"interval":10},"disk_check":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/disk-metrics.rb --scheme stats.:::name:::","subscribers":["linux"],"interval":60},"memory":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/memory.rb --scheme stats.:::name:::","subscribers":["check_default"],"interval":10},"load":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/load.rb --scheme stats.:::name:::","subscribers":["check_default"],"interval":10},"filesystem":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/df.rb --scheme stats.:::name:::","subscribers":["check_default"],"interval":60},"hpux":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/vmstat-metrics-hpux.rb --scheme stats.:::name:::","subscribers":["hpux"],"interval":10},"aix":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/vmstat-metrics-aix.rb --scheme stats.:::name:::","subscribers":["aix"],"interval":10},"hpux-ruby-memory":{"type":"metric","handlers":["graphite"],"command":"/etc/sensu/plugins/system/hpux-ruby-memory.rb --scheme stats.:::name:::","subscribers":["hpux"],"interval":10},"del_log":{"handler":"default","subscribers":["del_log"],"interval":60}}}
+{
+	"id": "graphite",
+	"checks": {
+		"linux": { 
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/vmstat-metrics.rb --scheme stats.:::name:::",
+			"subscribers":["linux"],
+			"interval":10
+			},
+		"check_default": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/network.rb --scheme stats.:::name:::",
+			"subscribers":["check_default"],
+			"interval":10
+			},
+		"disk_check": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/disk-metrics.rb --scheme stats.:::name:::",
+			"subscribers":["linux"],
+			"interval":60
+			},
+		"memory": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/memory.rb --scheme stats.:::name:::",
+			"subscribers":["check_default"],
+			"interval":10
+			},
+		"load": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/load.rb --scheme stats.:::name:::",
+			"subscribers":["check_default"],
+			"interval":10
+			},
+		"filesystem": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/df.rb --scheme stats.:::name:::",
+			"subscribers":["check_default"],
+			"interval":60
+			},
+		"hpux": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/vmstat-metrics-hpux.rb --scheme stats.:::name:::",
+			"subscribers":["hpux"],
+			"interval":10
+			},
+		"aix": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/vmstat-metrics-aix.rb --scheme stats.:::name:::",
+			"subscribers":["aix"],
+			"interval":10
+			},
+		"hpux-ruby-memory": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/hpux-ruby-memory.rb --scheme stats.:::name:::",
+			"subscribers":["hpux"],
+			"interval":10
+			},
+		"del_log": {
+			"handler": "default",
+			"command": "/etc/sensu/handlers/client-log_del.rb",
+			"subscribers": ["del_log"],
+			"interval":60
+			}
+		}
+}
