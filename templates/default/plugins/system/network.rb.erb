@@ -46,7 +46,7 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
           timestamp = Time.now.to_i
           mate.each do |name, key|
             key.each do |child, value|
-              output [<% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %>config[:scheme],dname,name,child].join("."), value, timestamp
+              output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme],dname,name,child].join("."), value, timestamp
             end
           end
         end
