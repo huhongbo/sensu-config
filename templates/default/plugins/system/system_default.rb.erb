@@ -55,7 +55,7 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
         
     metrics.each do |parent, children|
       children.each do |child, value|
-        output [config[:scheme], dname, parent, child].join("."), value, timestamp
+        output [<% unless node["system"]["Business"] == null %> Zmcc <% else %><%= node["system"]["Business"] %><% end %>config[:scheme], dname, parent, child].join("."), value, timestamp
       end
     end
     ok  
