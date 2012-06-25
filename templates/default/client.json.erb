@@ -4,11 +4,7 @@
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
 	  "system",
-	  "del_log",
-	<% case node["platform"] %>
-		<% when "hpux" %>
-		"hpux"
-	<% end %>
+	  "del_log"<% if node["platform"] == "hpux" %>,"hpux"<% end %>
     ]
   }
 }
