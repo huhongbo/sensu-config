@@ -65,8 +65,8 @@ sensu_config.each do |sensu|
 end
   
 node["plugin_files"].each do |pluginfile|
-  cookbook_file "/etc/sensu/plugins/system/#{pluginfile}" do
-    source "plugins/system/#{pluginfile}"
+  template "/etc/sensu/plugins/system/#{pluginfile}" do
+    source "plugins/system/#{pluginfile}.erb"
     mode 775
   end
 end
