@@ -3,13 +3,9 @@
     "name": "<%= node.hostname %>",
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
-	  "check_default",
+	  "system",
 	  "del_log",
 	<% case node["platform"] %>
-		<% when "ubuntu" %>
-		"linux"
-		<% when "aix" %>
-		"aix"
 		<% when "hpux" %>
 		"hpux"
 	<% end %>
