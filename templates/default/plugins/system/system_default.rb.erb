@@ -19,10 +19,22 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
   def sprintf_int(num)
     sprintf("%.0f", num*100)
   end
+  
+  def convert_integers(values)
+    values.each_with_index do |value, index|
+      begin
+        converted = Integer(value)
+        values[index] = converted
+      rescue ArgumentError
+      end
+    end
+    values
+  end
 
   def run
     dname = "system"   
     sigar = Sigar.new
+    sys_info = sigar.sys_info.name.downcase
 
     cpu, mem, swap = sigar.cpu, sigar.mem, sigar.swap     
     cpu_user, cpu_sys, cpu_idle, cpu_wait, cpu_total = cpu.user, cpu.sys, cpu.idle, cpu.wait, cpu.total   
@@ -32,7 +44,12 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
     cpu_user = (sigar.cpu.user - cpu_user).to_f / cpu_total
     cpu_sys = (sigar.cpu.sys - cpu_sys).to_f / cpu_total
     cpu_idle = (sigar.cpu.idle - cpu_idle).to_f / cpu_total
-    cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
+    if sys_info == "hpux"
+      sar_value = convert_integers(`sar -u 1|tail -n1`.split(" "))
+      cpu_wait = sar_value[3]
+    else
+      cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
+    end
     
     memory_used = mem.used.to_f / mem.total.to_f
     memory_sys = (mem.used - mem.actual_used).to_f / mem.total.to_f

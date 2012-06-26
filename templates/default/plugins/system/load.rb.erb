@@ -16,15 +16,19 @@ class Load < Sensu::Plugin::Metric::CLI::Graphite
     :long => "--scheme SCHEME",
     :default => "#{Socket.gethostname}.load"
 
+  def sprintf_int(num)
+    sprintf("%.2f", num)
+  end
+
   def run
     dname = "system"
     loadavg = Sigar.new.loadavg
     timestamp = Time.now.to_i
     metrics = {
       :load => {
-        :onemonute => loadavg[0],
-        :fivemonute => loadavg[1],
-        :fifteenmonute => loadavg[2]
+        :onemonute => sprintf_int(loadavg[0]),
+        :fivemonute => sprintf_int(loadavg[1]),
+        :fifteenmonute => sprintf_int(loadavg[2])
       }
     }
     metrics.each do |parent, children|
