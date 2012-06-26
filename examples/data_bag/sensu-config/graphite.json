@@ -22,7 +22,7 @@
 			"subscribers":["system"],
 			"interval":60
 			},
-		"hpux-ruby-memory": {
+		"hpux": {
 			"type":"metric",
 			"handlers":["graphite"],
 			"command":"/etc/sensu/plugins/system/hpux-ruby-memory.rb --scheme :::name:::",

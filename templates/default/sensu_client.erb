@@ -10,6 +10,14 @@ prog_sensu="ruby"
 prog_sensu="sensu-client"
 <% end %>
 
+<% if node["platform"] == "aix" %>
+client_path="/opt/freeware/ruby1.9/bin/sensu-client"
+<% elsif node["platform"] == "hpux" %>
+client_path="/usr/local/ruby1.9/bin/sensu-client"
+<% else %>
+client_path="sensu-client"
+<% end %>
+
 prog="sensu-client"
 logfile="/var/log/$prog.log"
 <% unless node["platform"] == "aix" %>
@@ -31,14 +39,14 @@ start()
 		PSPID=`ps -p $CPID|grep $prog|wc -l`
 		if [ $PSPID = 0 ]; then
 			echo "$prog start ..."
-			$prog -b -l $logfile -p $pidfile
+			$client_path -b -l $logfile -p $pidfile
 		else
 			echo "$prog running ..."
 		fi
 	else
 		if [ $var = 0 ]; then
 			echo "$prog start ..."
-			$prog -b -l $logfile -p $pidfile
+			$client_path -b -l $logfile -p $pidfile
 		else	
 			echo "$prog running"
 		fi
@@ -52,7 +60,7 @@ start()
 			echo "$prog is running"
 		else
 			echo "$prog start ..."
-			$prog -b -l $logfile -p $pidfile
+			$client_path -b -l $logfile -p $pidfile
 		fi
 	else
 		if [ -d "pid_id_file" ]; then
@@ -60,7 +68,7 @@ start()
 			echo "$pid" > $pidfile
 		else
 			echo "$prog start ..."
-			$prog -b -l $logfile -p $pidfile
+			$client_path -b -l $logfile -p $pidfile
 		fi
 	fi
 }

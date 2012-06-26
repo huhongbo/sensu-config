@@ -32,10 +32,19 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
         end
 
         if (!ifname.include?(":"))
-          ifstat = sigar.net_interface_stat(ifname)
+          ifstat = sigar.net_interface_stat(ifname)         
+          rx_bytes, tx_bytes = ifstat.rx_bytes, ifstat.tx_bytes
+          sleep 1         
+          ifstat_new = sigar.net_interface_stat(ifname)
+          rx_bytes = ifstat_new.rx_bytes - rx_bytes
+          tx_bytes = ifstat_new.tx_bytes - tx_bytes
           
-          rx_bytes = ifstat.rx_bytes
-          tx_bytes = ifstat.tx_bytes
+          unless rx_bytes >= 0
+            rx_bytes = 0
+          end
+          unless tx_bytes >= 0
+            tx_bytes = 0
+          end
 
           mate = {
               ifname =>{
