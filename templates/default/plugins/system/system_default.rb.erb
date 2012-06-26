@@ -49,6 +49,7 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
       cpu_wait = sar_value[3]
     else
       cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
+      cpu_wait = sprintf_int(cpu_wait)
     end
     
     memory_used = mem.used.to_f / mem.total.to_f
@@ -61,7 +62,7 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
         :user => sprintf_int(cpu_user),
         :sys =>  sprintf_int(cpu_sys),
         :idle => sprintf_int(cpu_idle),
-        :wait => sprintf_int(cpu_wait) 
+        :wait => cpu_wait 
       },
       :memory => {
         :mem_used => sprintf_int(memory_used),
