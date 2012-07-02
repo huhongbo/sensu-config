@@ -26,9 +26,6 @@ else
 end
 
 directory "/var/log" do
-  owner "root"
-  group "system"
-  mode 0755
   action :create
 end
 
@@ -42,9 +39,6 @@ if node["os"] == "aix"
   end
 else
   directory "/var/run" do
-    owner "root"
-    group "system"
-    mode 0755
     action :create
   end
 end
