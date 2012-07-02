@@ -15,6 +15,23 @@ root_group = value_for_platform(
 directory "/etc/sensu" do
   action :create
 end
+unless node["platform"] == "hpux"
+  directory "/etc/init.d" do
+    action :create
+  end
+else
+  directory "/sbin/init.d" do
+    action :create
+  end    
+end
+
+directory "/var/log" do
+  owner "root"
+  group "system"
+  mode 0755
+  action :create
+end
+
 
 if node["os"] == "aix"
   directory "/var/chef/run" do
@@ -23,7 +40,16 @@ if node["os"] == "aix"
     mode 0755
     action :create
   end
+else
+  directory "/var/run" do
+    owner "root"
+    group "system"
+    mode 0755
+    action :create
+  end
 end
+
+
 
 %w{ conf.d handlers plugins }.each do |dir|
   directory "/etc/sensu/#{dir}" do
@@ -80,11 +106,6 @@ end
 
 #service config
 
-if node["os"] == "aix"
-  directory "/etc/init.d" do
-    action :create
-  end
-end
 
 conf_dir = value_for_platform(
 ["aix", "ubuntu"] => {"default" => "/etc/init.d"},
