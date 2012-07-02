@@ -79,6 +79,13 @@ node["handler_files"].each do |handlerfile|
 end
 
 #service config
+
+if node["os"] == "aix"
+  directory "/etc/init.d" do
+    action :create
+  end
+end
+
 conf_dir = value_for_platform(
 ["aix", "ubuntu"] => {"default" => "/etc/init.d"},
 ["hpux"] => { "default" => "/sbin/init.d" },
