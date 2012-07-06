@@ -1,1 +1,22 @@
-{"id":"handlers","handlers":{"default":{"type":"set","handlers":["stdout"]},"stdout":{"type":"pipe","command":"each hello"},"graphite":{"type":"amqp","exchange":{"type":"topic","name":"graphite","passive":"true"},"send_only_check_output":true}}}
+{
+	"id":"handlers",
+	"handlers":{
+		"default":{
+			"type":"set",
+			"handlers":["stdout"]
+			},
+		"stdout":{
+			"type":"pipe",
+			"command":"echo hello"
+			},
+		"graphite":{
+			"type":"amqp",
+			"exchange":{
+				"type":"topic",
+				"name":"graphite",
+				"passive":"true"
+				},
+				"send_only_check_output":true
+			}
+		}
+}

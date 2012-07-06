@@ -1,1 +1,26 @@
-{"id":"config","rabbitmq":{"host":"pc-mon02","port":5672,"vhost":"/sensu","user":"sensu","password":"admin"},"redis":{"host":"pc-mon02","port":6379},"api":{"host":"pc-mon02","port":4567,"user":"admin","password":"admin"},"dashboard":{"host":"pc-mon02","port":80,"user":"admin","password":"admin"}}
+{
+	"id":"config",
+	"rabbitmq": {
+		"host":"pc-mon02",
+		"port":5672,
+		"vhost":"/sensu",
+		"user":"sensu",
+		"password":"admin"
+		},
+	"redis": {
+		"host":"pc-mon02",
+		"port":6379
+		},
+	"api": {
+		"host":"pc-mon02",
+		"port":4567,
+		"user":"admin",
+		"password":"admin"
+		},
+	"dashboard": {
+		"host":"pc-mon02",
+		"port":80,
+		"user":"admin",
+		"password":"admin"
+		}
+}
