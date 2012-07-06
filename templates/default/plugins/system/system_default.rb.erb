@@ -35,23 +35,29 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
     dname = "system"   
     sigar = Sigar.new
     sys_info = sigar.sys_info.name.downcase
+    cpu, mem, swap = sigar.cpu, sigar.mem, sigar.swap 
 
-    cpu, mem, swap = sigar.cpu, sigar.mem, sigar.swap     
-    cpu_user, cpu_sys, cpu_wait, cpu_total = cpu.user, cpu.sys, cpu.wait, cpu.total   
-    sleep 1
-    
-    cpu_total = sigar.cpu.total - cpu_total
-    cpu_user = (sigar.cpu.user - cpu_user).to_f / cpu_total
-    cpu_sys = (sigar.cpu.sys - cpu_sys).to_f / cpu_total
     if sys_info == "hpux"
       sar_value = convert_integers(`sar -u 1|tail -n1`.split(" "))
+      cpu_user = sar_value[1]
+      cpu_sys = sar_value[2]
       cpu_wait = sar_value[3]
-    else
+      cup_idle = sar_value[4]
+    else             
+      cpu_user, cpu_sys, cpu_wait, cpu_total = cpu.user, cpu.sys, cpu.wait, cpu.total   
+      sleep 1
+    
+      cpu_total = sigar.cpu.total - cpu_total
+      cpu_user = (sigar.cpu.user - cpu_user).to_f / cpu_total
+      cpu_user = sprintf_int(cpu_user)
+      cpu_sys = (sigar.cpu.sys - cpu_sys).to_f / cpu_total
+      cpu_sys = sprintf_int(cpu_sys)
       cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
-      cpu_wait = sprintf_int(cpu_wait)
+      cpu_wait = sprintf_int(cpu_wait)  
+        
+      cpu_s = cpu_user.to_i + cpu_wait.to_i  + cpu_sys.to_i
+      cup_idle = 100 - cpu_s
     end
-    cpu_s = sprintf_int(cpu_user).to_i + cpu_wait.to_i + sprintf_int(cpu_sys).to_i
-    cup_idle = 100 - cpu_s
     
     memory_used = mem.used.to_f / mem.total.to_f
     memory_sys = (mem.used - mem.actual_used).to_f / mem.total.to_f
@@ -60,8 +66,8 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
     timestamp = Time.now.to_i
     metrics = {
       :cpu => {
-        :user => sprintf_int(cpu_user),
-        :sys =>  sprintf_int(cpu_sys),
+        :user => cpu_user,
+        :sys =>  cpu_sys,
         :idle => cup_idle,
         :wait => cpu_wait 
       },
