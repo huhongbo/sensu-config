@@ -8,7 +8,7 @@
 			"subscribers":["system"],
 			"interval":10
 			},
-		"newwork": {
+		"network": {
 			"type":"metric",
 			"handlers":["graphite"],
 			"command":"/etc/sensu/plugins/system/network.rb --scheme :::name:::",

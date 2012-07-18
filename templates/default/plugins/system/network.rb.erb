@@ -32,7 +32,11 @@ class InterfaceGraphite < Sensu::Plugin::Metric::CLI::Graphite
         end
 
         if (!ifname.include?(":"))
-          ifstat = sigar.net_interface_stat(ifname)         
+        begin
+          ifstat = sigar.net_interface_stat(ifname)        
+        rescue
+          next
+        end 
           rx_bytes, tx_bytes = ifstat.rx_bytes, ifstat.tx_bytes
           sleep 1         
           ifstat_new = sigar.net_interface_stat(ifname)

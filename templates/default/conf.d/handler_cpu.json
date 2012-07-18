@@ -1,0 +1,8 @@
+{
+	"handlers": {
+		"h-cpu": {
+      		"type": "pipe",
+      		"command": "/etc/sensu/handlers/chef_tag_handler.rb"
+		}
+	}
+}
