@@ -98,7 +98,6 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      action :updated
       notifies :updated, resources(:execute => "restart"), :immediately
     end
   end
