@@ -152,7 +152,7 @@ if File.exist?("/var/log/sensu-client.log")
   time_now = Time.now.strftime("%Y%m%d%H%M%S") 
   time_value = (time_now.to_i - file_time.to_i) / 60
   unless time_value < 3
-    service "client_restart" do
+    service "sensu_client" do
       if (platform?("hpux"))
         provider Chef::Provider::Service::Hpux
       elsif (platform?("aix"))
