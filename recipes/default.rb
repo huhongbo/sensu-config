@@ -66,6 +66,10 @@ template "#{sensu_dir}/conf.d/client.json" do
   notifies :restart, "service[sensu_client]", :delayed
 end
 
+action :updated do
+  @new_resource.updated_by_last_action(true)
+end
+
 sensu_config = data_bag('sensu-config')
 sensu_config.each do |sensu|
   content_json = data_bag_item("sensu-config","#{sensu}").reject do |key,value|
@@ -87,15 +91,40 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
     end
+    file_time = File.mtime("#{sensu_dir}/config.json").strftime("%Y%m%d%H%M")
+    time_now = Time.now.strftime("%Y%m%d%H%M")
+    if file_time == time_now
+       service "sensu_client" do
+          if (platform?("hpux"))
+            provider Chef::Provider::Service::Hpux
+          elsif (platform?("aix"))
+            provider Chef::Provider::Service::Init
+          end  
+            action :restart
+        end
+      end
+    
   end
   if sensu != "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
     end
+    file_time = File.mtime("#{sensu_dir}/conf.d/#{sensu}.json").strftime("%Y%m%d%H%M")
+    time_now = Time.now.strftime("%Y%m%d%H%M")
+    if file_time == time_now
+       service "sensu_client" do
+          if (platform?("hpux"))
+            provider Chef::Provider::Service::Hpux
+          elsif (platform?("aix"))
+            provider Chef::Provider::Service::Init
+          end  
+            action :restart
+        end
+      end
   end
+  
+  
 
 end
   
