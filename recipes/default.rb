@@ -76,29 +76,16 @@ execute "restart" do
   action :nothing
 end
 
-
+=begin
 sensu_config = data_bag('sensu-config')
 sensu_config.each do |sensu|
   content_json = data_bag_item("sensu-config","#{sensu}").reject do |key,value|
     %w[id chef_type data_bag].include?(key)
   end
-=begin
-  unless sensu == "config"
-    file "#{sensu_dir}/conf.d/#{sensu}.json" do
-      content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
-    end
-  else
-    file "#{sensu_dir}/config.json" do
-      content content_json.to_json
-      notifies :restart, "service[sensu_client]", :delayed
-    end
-  end
-=end
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :run, resources(:execute => "restart"), :immediately
+      notifies :run, "execute[restart]", :immediately
     end
   end
   
@@ -108,7 +95,7 @@ sensu_config.each do |sensu|
     end 
   end
 end  
-
+=end
 
 node["plugin_files"].each do |pluginfile|
   template "/etc/sensu/plugins/system/#{pluginfile}" do
@@ -147,8 +134,9 @@ service "sensu_client" do
     provider Chef::Provider::Service::Hpux
   elsif (platform?("aix"))
     provider Chef::Provider::Service::Init
-  end  
-    action :start
+  end
+  supports :restart => true  
+  action :start
 end
 
 # check sensu client Process status
