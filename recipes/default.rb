@@ -88,37 +88,14 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
+      notifies :restart, "service[sensu_client]", :immediately
     end
-    file_time = File.mtime("#{sensu_dir}/config.json").strftime("%Y%m%d%H%M")
-    time_now = Time.now.strftime("%Y%m%d%H%M")
-    if file_time == time_now
-        service "sensu_client" do
-          if (platform?("hpux"))
-            provider Chef::Provider::Service::Hpux
-          elsif (platform?("aix"))
-            provider Chef::Provider::Service::Init
-          end  
-            action :restart
-        end
-    end  
   end
   
   if sensu != "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
-    end
-    file_time = File.mtime("#{sensu_dir}/conf.d/#{sensu}.json").strftime("%Y%m%d%H%M")
-    time_now = Time.now.strftime("%Y%m%d%H%M")
-    if file_time == time_now
-      service "sensu_client" do
-          if (platform?("hpux"))
-            provider Chef::Provider::Service::Hpux
-          elsif (platform?("aix"))
-            provider Chef::Provider::Service::Init
-          end  
-            action :restart
-      end
-    end
+    end 
   end
 end
   
