@@ -65,8 +65,16 @@ template "#{sensu_dir}/conf.d/client.json" do
   mode 0644
   notifies :restart, "service[sensu_client]", :delayed
 end
+serve_dir = value_for_platform(
+["aix", "ubuntu"] => {"default" => "/etc/init.d"},
+["hpux"] => { "default" => "/sbin/init.d" },
+"default" => "/etc/init.d"
+)
 
-
+execute "restart" do
+  command "#{serve_dir}/sensu_client restart"
+  action :nothing
+end
 
 sensu_config = data_bag('sensu-config')
 sensu_config.each do |sensu|
@@ -89,7 +97,7 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :updated, resources("service[client_restart]"), :immediately
+      notifies :updated, resources(:execute => "restart"), :immediately
     end
   end
   
