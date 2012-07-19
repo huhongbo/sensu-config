@@ -76,6 +76,7 @@ execute "restart" do
   action :nothing
 end
 
+
 sensu_config = data_bag('sensu-config')
 sensu_config.each do |sensu|
   content_json = data_bag_item("sensu-config","#{sensu}").reject do |key,value|
@@ -97,6 +98,7 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
+      action :updated
       notifies :updated, resources(:execute => "restart"), :immediately
     end
   end
@@ -106,8 +108,9 @@ sensu_config.each do |sensu|
       content content_json.to_json
     end 
   end
-end
-  
+end  
+
+
 node["plugin_files"].each do |pluginfile|
   template "/etc/sensu/plugins/system/#{pluginfile}" do
     source "plugins/system/#{pluginfile}.erb"
