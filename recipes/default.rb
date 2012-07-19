@@ -65,16 +65,22 @@ template "#{sensu_dir}/conf.d/client.json" do
   mode 0644
   notifies :restart, "service[sensu_client]", :delayed
 end
-serve_dir = value_for_platform(
-["aix", "ubuntu"] => {"default" => "/etc/init.d"},
-["hpux"] => { "default" => "/sbin/init.d" },
-"default" => "/etc/init.d"
-)
-
-execute "restart" do
-  command "#{serve_dir}/sensu_client restart"
-  action :nothing
+ 
+remote_directory "/etc/sensu/conf.d" do
+  source "conf.d"
+  recursive true
+  notifies :restart, "service[sensu_client]", :delayed
 end
+
+cookbook_file "/etc/sensu/config.json" do
+  source "config.json"
+  notifies :restart, "service[sensu_client]", :delayed
+end
+
+#execute "restart" do
+#  command "#{serve_dir}/sensu_client restart"
+#  action :nothing
+#end
 
 =begin
 sensu_config = data_bag('sensu-config')

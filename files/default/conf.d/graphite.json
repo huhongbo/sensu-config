@@ -1,0 +1,38 @@
+{
+	"checks": {
+		"system": { 
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/system_default.rb --scheme :::name:::",
+			"subscribers":["system"],
+			"interval":10
+			},
+		"network": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/network.rb --scheme :::name:::",
+			"subscribers":["system"],
+			"interval":60
+			},
+		"load": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/load.rb --scheme :::name:::",
+			"subscribers":["system"],
+			"interval":60
+			},
+		"hpux": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/hpux-ruby-memory.rb --scheme :::name:::",
+			"subscribers":["hpux"],
+			"interval":60
+			},
+		"del_log": {
+			"handler": "default",
+			"command": "/etc/sensu/handlers/client-log_del.rb",
+			"subscribers": ["del_log"],
+			"interval":300
+			}
+		}
+}
