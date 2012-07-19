@@ -67,6 +67,7 @@ template "#{sensu_dir}/conf.d/client.json" do
 end
 
 
+
 sensu_config = data_bag('sensu-config')
 sensu_config.each do |sensu|
   content_json = data_bag_item("sensu-config","#{sensu}").reject do |key,value|
@@ -88,7 +89,7 @@ sensu_config.each do |sensu|
   if sensu == "config"
     file "#{sensu_dir}/config.json" do
       content content_json.to_json
-      notifies :restart, "service[sensu_client]", :immediately
+      notifies :updated, resources("service[client_restart]"), :immediately
     end
   end
   
@@ -147,7 +148,7 @@ if File.exist?("/var/log/sensu-client.log")
   time_now = Time.now.strftime("%Y%m%d%H%M%S") 
   time_value = (time_now.to_i - file_time.to_i) / 60
   unless time_value < 3
-    service "sensu_client" do
+    service "client_restart" do
       if (platform?("hpux"))
         provider Chef::Provider::Service::Hpux
       elsif (platform?("aix"))
