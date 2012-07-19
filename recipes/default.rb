@@ -71,6 +71,7 @@ sensu_config.each do |sensu|
   content_json = data_bag_item("sensu-config","#{sensu}").reject do |key,value|
     %w[id chef_type data_bag].include?(key)
   end
+=begin
   unless sensu == "config"
     file "#{sensu_dir}/conf.d/#{sensu}.json" do
       content content_json.to_json
@@ -82,6 +83,20 @@ sensu_config.each do |sensu|
       notifies :restart, "service[sensu_client]", :delayed
     end
   end
+=end
+  if sensu == "config"
+    file "#{sensu_dir}/config.json" do
+      content content_json.to_json
+      notifies :restart, "service[sensu_client]", :delayed
+    end
+  end
+  if sensu != "config"
+    file "#{sensu_dir}/conf.d/#{sensu}.json" do
+      content content_json.to_json
+      notifies :restart, "service[sensu_client]", :delayed
+    end
+  end
+
 end
   
 node["plugin_files"].each do |pluginfile|
