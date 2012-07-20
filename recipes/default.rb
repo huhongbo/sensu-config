@@ -148,9 +148,9 @@ end
 # check sensu client Process status
 
 if File.exist?("/var/log/sensu-client.log")
-  file_time = File.mtime("/var/log/sensu-client.log").strftime("%Y%m%d%H%M%S")
-  time_now = Time.now.strftime("%Y%m%d%H%M%S") 
-  time_value = (time_now.to_i - file_time.to_i) / 60
+  file_time = File.mtime("/var/log/sensu-client.log").to_i
+  time_now = Time.now.to_i
+  time_value = (time_now - file_time) / 60
   unless time_value < 3
     service "sensu_client" do
       if (platform?("hpux"))
