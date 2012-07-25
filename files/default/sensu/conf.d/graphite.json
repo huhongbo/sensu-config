@@ -37,7 +37,7 @@
 		"user_cpu": {
 			"type": "metric",
 			"handlers": ["graphite"],
-			"command": "/etc/sensu/plugins/system/system_user_cpu_used.rb ----scheme :::name:::",
+			"command": "/etc/sensu/plugins/system/system_user_cpu_used.rb --scheme :::name:::",
 			"subscribers": ["user_cpu"],
 			"interval": 10
 		}
