@@ -3,7 +3,7 @@ maintainer_email "dn@365"
 license          "All rights reserved"
 description      "Installs/Configures sensu-config add aix and hpux add server, add check sensu client process status"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.0.8"
+version          "0.0.9"
 
 
 # https://github.com/dn365/chef-base-config
