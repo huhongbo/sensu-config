@@ -1,10 +1,10 @@
 {
 	"checks": {
-		"cpu": {
-		  	"handler": ["event"],
+		"cpu": {	  	
 	      	"command": "/etc/sensu/plugins/check_warning.rb -t <% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user -s 60 -w 9 -c 12",
 	      	"standalone": true,
-	      	"interval": 60
+	      	"interval": 60,
+			"handlers": ["event"],
 		}
 	}
 }

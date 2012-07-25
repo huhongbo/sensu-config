@@ -72,13 +72,13 @@ end
 remote_directory "/etc/sensu/handlers" do
   source "sensu/handlers"
   recursive true
-  mode 0755
+  files_mode 0755
 end
 
 remote_directory "/etc/sensu/plugins" do
   source "sensu/plugins"
+  files_mode 0755
   recursive true
-  mode 0755
 end
 
 # remote config.json
