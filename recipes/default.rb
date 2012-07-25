@@ -162,8 +162,6 @@ service "sensu_client" do
     provider Chef::Provider::Service::Hpux
   elsif (platform?("aix"))
     provider Chef::Provider::Service::Init
-  elsif (platform?("ubuntu"))
-    Chef::Provider::Service::Init::Debian
   end
   #supports :restart => true  
   action :start
