@@ -47,7 +47,7 @@ end
 
 %w{ conf.d handlers plugins }.each do |dir|
   directory "/etc/sensu/#{dir}" do
-    mode 775
+    mode 0775
     owner "root"
     group root_group
     action :create
@@ -59,21 +59,37 @@ directory "/etc/sensu/plugins/system" do
   action :create
 end
 
+
+
 sensu_dir = "/etc/sensu"
-
-
 # remote copy files conf.d  
-remote_directory "/etc/sensu" do
-  source "sensu"
+remote_directory "/etc/sensu/conf.d" do
+  source "sensu/conf.d"
   recursive true
   notifies :restart, "service[sensu_client]", :delayed
 end
 
+remote_directory "/etc/sensu/handlers" do
+  source "sensu/handlers"
+  recursive true
+  mode 0755
+end
+
+remote_directory "/etc/sensu/plugins" do
+  source "sensu/plugins"
+  recursive true
+  mode 0755
+end
+
 # remote config.json
-#cookbook_file "/etc/sensu/config.json" do
-#  source "config.json"
-#  notifies :restart, "service[sensu_client]", :delayed
-#end
+cookbook_file "/etc/sensu/config.json" do
+  source "sensu/config.json"
+  notifies :restart, "service[sensu_client]", :delayed
+end
+
+cookbook_file "/etc/sensu/redis-event.rb" do
+  source "sensu/redis-event.rb"
+end
 
 
 =begin
