@@ -4,6 +4,9 @@
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
 	  "system",
+	<% if node["tags"].include?("cpu") %>
+	  "system_other",
+	<% end %>
 	  "del_log"<% if node["platform"] == "hpux" %>,
 	  "hpux"
 	<% end %>
