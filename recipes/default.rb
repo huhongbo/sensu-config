@@ -60,27 +60,21 @@ directory "/etc/sensu/plugins/system" do
 end
 
 sensu_dir = "/etc/sensu"
-template "#{sensu_dir}/conf.d/client.json" do
-  source "client.json.erb"
-  mode 0644
-  notifies :restart, "service[sensu_client]", :delayed
-end
- 
-remote_directory "/etc/sensu/conf.d" do
-  source "conf.d"
+
+
+# remote copy files conf.d  
+remote_directory "/etc/sensu" do
+  source "sensu"
   recursive true
   notifies :restart, "service[sensu_client]", :delayed
 end
 
-cookbook_file "/etc/sensu/config.json" do
-  source "config.json"
-  notifies :restart, "service[sensu_client]", :delayed
-end
-
-#execute "restart" do
-#  command "#{serve_dir}/sensu_client restart"
-#  action :nothing
+# remote config.json
+#cookbook_file "/etc/sensu/config.json" do
+#  source "config.json"
+#  notifies :restart, "service[sensu_client]", :delayed
 #end
+
 
 =begin
 sensu_config = data_bag('sensu-config')
@@ -103,6 +97,18 @@ sensu_config.each do |sensu|
 end  
 =end
 
+
+
+# template client.json erb
+node["conf_files"].each do |conf|
+  template "#{sensu_dir}/conf.d/#{conf}" do
+    source "conf.d/#{conf}.erb"
+    mode 0644
+    notifies :restart, "service[sensu_client]", :delayed
+  end
+end
+
+# temp system erb
 node["plugin_files"].each do |pluginfile|
   template "/etc/sensu/plugins/system/#{pluginfile}" do
     source "plugins/system/#{pluginfile}.erb"
@@ -110,12 +116,12 @@ node["plugin_files"].each do |pluginfile|
   end
 end
 
-node["handler_files"].each do |handlerfile|
-  cookbook_file "/etc/sensu/handlers/#{handlerfile}" do
-    source "handlers/#{handlerfile}"
-    mode 775
-  end
-end
+#node["handler_files"].each do |handlerfile|
+#  cookbook_file "/etc/sensu/handlers/#{handlerfile}" do
+#    source "handlers/#{handlerfile}"
+#    mode 775
+#  end
+#end
 
 #service config
 

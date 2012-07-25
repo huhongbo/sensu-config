@@ -33,6 +33,13 @@
 			"command": "/etc/sensu/handlers/client-log_del.rb",
 			"subscribers": ["del_log"],
 			"interval":300
-			}
+		},
+		"user_cpu": {
+			"type": "metric",
+			"handler": ["graphite"],
+			"command": "/etc/sensu/plugins/system/system_user_cpu_used.rb ----scheme :::name:::",
+			"subscribers": ["system_other"],
+			"interval": 10
 		}
+	}
 }

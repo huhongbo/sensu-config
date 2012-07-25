@@ -3,11 +3,15 @@
 		"default":{
 			"type":"set",
 			"handlers":["stdout"]
-			},
+		},
 		"stdout":{
 			"type":"pipe",
 			"command":"echo hello"
-			},
+		},
+		"event":{
+			"tpye": "pipe",
+			"command": "/etc/sensu/handlers/system_event_handler.rb"
+		},
 		"graphite":{
 			"type":"amqp",
 			"exchange":{
@@ -16,6 +20,6 @@
 				"passive":"true"
 				},
 				"send_only_check_output":true
-			}
 		}
+	}
 }
