@@ -5,7 +5,7 @@
     "subscriptions": [
 	  "system",
 	<% if node["tags"].include?("cpu") %>
-	  "system_other",
+	  "user_cpu",
 	<% end %>
 	  "del_log"<% if node["platform"] == "hpux" %>,
 	  "hpux"
