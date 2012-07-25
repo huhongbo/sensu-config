@@ -9,7 +9,7 @@
 			"command":"echo hello"
 		},
 		"event":{
-			"tpye": "pipe",
+			"type": "pipe",
 			"command": "/etc/sensu/handlers/system_event_handler.rb"
 		},
 		"graphite":{
