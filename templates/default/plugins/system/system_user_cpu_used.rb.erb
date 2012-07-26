@@ -22,7 +22,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
   
   def memd_percent(memory_value)
     memd = Sigar.new.mem
-    memd_total = memd.total
+    memd_total = memd.total.to_f / 1024
     value = sprintf_int(memory_value.to_f / memd_total.to_f)
   end
 
