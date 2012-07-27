@@ -6,6 +6,17 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+
+#add graphite web url to hosts
+hosts_file = File.open("/etc/hosts").read
+unless hosts_file.include?("#{node["graphite"]["url"]}")
+  hosts_stat = File.open("/etc/hosts","w")
+  hosts_stat.puts(hosts_file)
+  hosts_stat.puts("#{node["graphite"]["ser_ip"]} #{node["graphite"]["url"]}")
+  hosts_close
+end
+
+
 root_group = value_for_platform(
   ["aix"] => { "default" => "system" },
   ["hpux"] => { "default" => "sys" },

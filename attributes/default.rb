@@ -5,3 +5,6 @@ default["handler_files"] = ["client-log_del.rb"]
 
 default["conf_files"] = ["client.json", "check_cpu.json"]
 
+default["graphite"]["url"] = "graphite.zj.chinamobile.com"
+default["graphite"]["ser_ip"] = "10.70.181.217"
+
