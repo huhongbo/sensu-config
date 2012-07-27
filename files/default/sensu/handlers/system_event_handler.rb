@@ -29,7 +29,7 @@ class SystemEvent < Sensu::Handler
         puts "#{client_name} #{check_name} warnning ..."
       when 2
         unless event.put_event == nil
-          if difftime > 30
+          if difftime > 60
             event.set_event("#{time}")
             puts "update #{client_name} #{check_name} crile ..."
             `knife tag create #{client_name} #{check_name}`
