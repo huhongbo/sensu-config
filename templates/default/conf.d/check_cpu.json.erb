@@ -6,7 +6,7 @@
 	      	"interval": 300
 		},
 		"stdev_cpu": {
-			"command": "/etc/sensu/plugins/check_warning.rb -t 'stdev(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,60)' -s 600 -w 15 -c 25 -r",
+			"command": "/etc/sensu/plugins/check_warning.rb -t 'stdev(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,60)' -s 600 -w 15 -c 20 -r",
 			"standalone": true,
 	      	"interval": 600
 		}
