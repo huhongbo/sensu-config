@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 #
 # code dn365
+# v 0.02
 #
 
 require 'rubygems' if RUBY_VERSION < '1.9.0'
@@ -71,6 +72,16 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
     data_value = sprintf("%.2f", x / i )
     return data_value
   end
+  
+  def stdev_data(file)
+    arry = []
+    file.each do |f|
+      data = f["datapoints"].reject {|k,v| [nil].include?(k) }  
+      data.map {|k,v| arry << k }
+    end
+    return sprintf("%.2f", arry.max)
+  end
+  
   
   def holt_grap_data(file)
     i, x = 0, 0
@@ -161,32 +172,61 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
          end
       else
         grap_url = "#{base_url}/render?from=-#{from_time}sen&until=now&target=#{target}&format=json"
-        file = read_url(grap_url) 
-        data_value = grap_data(file)
-        if config[:crit] != nil || config[:warn] != nil
-          if config[:crit] == nil
-            if data_value.to_i >= config[:warn].to_i
-              warning msg = "#{target} warning: #{data_value} >= #{config[:warn]}"
+        file = read_url(grap_url)
+        if config[:reverse]
+          data_value = stdev_data(file)
+          if config[:crit] != nil || config[:warn] != nil
+            if config[:crit] == nil
+              if data_value.to_i >= config[:warn].to_i
+                warning msg = "#{target} standard warning: #{data_value} >= #{config[:warn]}"
+              else
+                ok msg = "#{target} standard ok: #{data_value}"
+              end
+            elsif config[:warn] == nil
+              if data_value.to_i >= config[:crit].to_i
+                critical msg = "#{target} standard critical: #{data_value} >= #{config[:crit]}"
+              else
+                ok msg = "#{target} standard ok: #{data_value}"
+              end
             else
-              ok msg = "#{target} ok: #{data_value}"
-            end
-          elsif config[:warn] == nil
-            if data_value.to_i >= config[:crit].to_i
-              critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
-            else
-              ok msg = "#{target} ok: #{data_value}"
+              if data_value.to_i >= config[:crit].to_i
+                critical msg = "#{target} standard critical: #{data_value} >= #{config[:crit]}"
+              elsif data_value.to_i >= config[:warn].to_i
+                warning msg = "#{target} standard warning: #{config[:crit]} < #{data_value} >= #{config[:warn]}"
+              else
+                ok msg = "#{target} standard ok: #{data_value}"
+              end
             end
           else
-            if data_value.to_i >= config[:crit].to_i
-              critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
-            elsif data_value.to_i >= config[:warn].to_i
-              warning msg = "#{target} warning: #{config[:crit]} < #{data_value} >= #{config[:warn]}"
-            else
-              ok msg = "#{target} ok: #{data_value}"
-            end
+            unknown msg = "Not find -c crit or -w warn, please -h"
           end
         else
-          unknown msg = "Not find -c crit or -w warn, please -h"
+          data_value = grap_data(file)
+          if config[:crit] != nil || config[:warn] != nil
+            if config[:crit] == nil
+              if data_value.to_i >= config[:warn].to_i
+                warning msg = "#{target} warning: #{data_value} >= #{config[:warn]}"
+              else
+                ok msg = "#{target} ok: #{data_value}"
+              end
+            elsif config[:warn] == nil
+              if data_value.to_i >= config[:crit].to_i
+                critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
+              else
+                ok msg = "#{target} ok: #{data_value}"
+              end
+            else
+              if data_value.to_i >= config[:crit].to_i
+                critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
+              elsif data_value.to_i >= config[:warn].to_i
+                warning msg = "#{target} warning: #{config[:crit]} < #{data_value} >= #{config[:warn]}"
+              else
+                ok msg = "#{target} ok: #{data_value}"
+              end
+            end
+          else
+            unknown msg = "Not find -c crit or -w warn, please -h"
+          end
         end
       end
     end
