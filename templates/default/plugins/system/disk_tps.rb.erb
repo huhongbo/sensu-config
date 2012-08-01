@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+#
+# Disk tps Plugin
+# ===
+# code dn365
+
+require 'rubygems' if RUBY_VERSION < '1.9.0'
+require 'sensu-plugin/metric/cli'
+require 'socket'
+require 'rbconfig'
+
+class DiskTps < Sensu::Plugin::Metric::CLI::Graphite
+
+  option :scheme,
+    :description => "Metric naming scheme, text to prepend to .$parent.$child",
+    :long => "--scheme SCHEME",
+    :default => "#{Socket.gethostname}.disk"
+
+    def default_tps(tps,key)
+      arry = []
+      i,a,count = 0, 0, 0
+      tps.each_line do |t|
+        unless t == "\n"
+          i += 1
+          arry << t
+          a = i if t.include?("tps")
+        end
+      end
+      (a..(i-1)).each do |x|
+          count += arry[x].split(" ")[key].to_i  
+      end
+      quantity = i - a
+      return quantity, count
+    end
+
+    def hpux_tps(tps,key)
+      i,count = 0,0
+      tps.each_line do |t|
+        if t.include?("Average")
+         i += 1
+         count += t.split(" ")[key].to_i
+        end
+      end
+      quantity = i
+      return quantity, count
+    end
+
+  def run
+    dname = "system"
+    uname = RbConfig::CONFIG['host_os']
+    if uname.include?("hpux")
+      tps = %x[sar -d 1 2]
+    else
+      tps = %x[iostat 1 1]
+    end
+    
+    quantity,count = 0,0
+    if uname.include?("linux")
+       quantity,count = default_tps(tps,1)
+    elsif uname.include?("hpux")
+      quantity,count = hpux_tps(tps,4)
+    elsif uname.include?("aix")
+      quantity,count = default_tps(tps,2)
+    end
+    timestamp = Time.now.to_i  
+    metrics = {
+      "disk" => {
+        "disk_quantity" => quantity,
+        "tps" => count
+      }
+    }
+    metrics.each do |parent, children|
+      children.each do |child, value|
+        output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, parent, child].join("."), value, timestamp
+      end
+    end
+    ok
+  end
+end
+
