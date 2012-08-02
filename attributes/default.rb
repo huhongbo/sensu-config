@@ -1,5 +1,6 @@
 
-default["plugin_files"] = ["network.rb", "load.rb", "system_default.rb", "hpux-ruby-memory.rb", "system_user_cpu_used.rb"]
+default["plugin_files"] = ["network.rb", "load.rb", "system_default.rb", 
+  "hpux-ruby-memory.rb", "system_user_cpu_used.rb", "disk_tps.rb", "scsistat_hba.rb"]
   
 default["handler_files"] = ["client-log_del.rb"]
 

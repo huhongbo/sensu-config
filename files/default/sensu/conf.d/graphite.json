@@ -21,6 +21,20 @@
 			"subscribers":["system"],
 			"interval":60
 			},
+		"disk_tps": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/disk_tps.rb --scheme :::name:::",
+			"subscribers":["system"],
+			"interval":60
+		},
+		"scsistat": {
+			"type":"metric",
+			"handlers":["graphite"],
+			"command":"/etc/sensu/plugins/system/scsistat_hba.rb --scheme :::name:::",
+			"subscribers":["system"],
+			"interval":60
+		},
 		"hpux": {
 			"type":"metric",
 			"handlers":["graphite"],

@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+#
+# System scsistat_hba Plugin
+# this plugin support aix5.3 aix6.1 hpux11.31
+# ===
+# code dn365
+
+require 'rubygems' if RUBY_VERSION < '1.9.0'
+require 'sensu-plugin/metric/cli'
+require 'socket'
+require 'rbconfig'
+
+
+class Hba < Sensu::Plugin::Metric::CLI::Graphite
+
+  option :scheme,
+    :description => "Metric naming scheme, text to prepend to .$parent.$child",
+    :long => "--scheme SCHEME",
+    :default => "#{Socket.gethostname}.hba"
+    
+  
+  def aix_hba
+    hba_cmd = %x[/etc/sensu/plugins/scsistat]
+    arry, i = [], 0
+    hba_cmd.each_line do |h|
+      i += 1
+      arry << h
+    end
+    return arry, i
+  end
+  def hpux_hba
+    hba_cmd = %x[sar -H 1 2]
+    arry, i = [], 0
+    hba_cmd.each_line do |a|
+      if a.include?("Average")
+        i += 1
+        arry << a
+      end
+    end
+    return arry, i
+  end
+    
+    
+
+  def run
+    dname = "system"
+    dir_name = "hba"
+    timestamp = Time.now.to_i
+    uname = RbConfig::CONFIG['host_os']
+    
+    if uname.include?("aix5.3") or uname.include?("aix6.1")
+      arry, i = aix_hba
+      unless arry[1] == nil 
+        (1..(i-1)).each do |x|
+          f = arry[x].split(",")          
+          metrics = {
+            "#{f[0]}" => {
+              :iops => f[1],
+              :rmbs => f[2].to_i / 2048,
+              :wmbs => f[3].to_i / 2048
+            }
+          }
+          metrics.each do |parent, children|
+            children.each do |child, value|
+              output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, dir_name, parent, child].join("."), value, timestamp
+            end
+          end
+        end
+      end
+    elsif uname.include?("hpux11.31")
+      arry, i = hpux_hba
+      unless arry[0] == nil
+        (0..(i-1)).each do |x|
+          f = arry[x].split(" ")          
+          metrics = {
+            "#{f[1]}" => {
+              :iops => f[4],
+              :rmbs => f[7],
+              :wmbs => f[8]
+            }
+          }
+          metrics.each do |parent, children|
+            children.each do |child, value|
+              output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, dir_name, parent, child].join("."), value, timestamp
+            end
+          end
+        end
+      end
+    end
+    ok
+  end
+end
+
