@@ -3,8 +3,7 @@
     "name": "<%= node.hostname %>",
     "address": "<%= node.ipaddress %>",
     "subscriptions": [
-	  "system",
-	<% if node["tags"].include?("cpu") %>
+	  "system"<% if node["tags"].include?("cpu") %>,
 	  "user_cpu",
 	<% end %>
 	<% if node["platform"] == "hpux" %>
