@@ -43,10 +43,9 @@
 			"interval":60
 			},
 		"del_log": {
-			"handler": "default",
 			"command": "/etc/sensu/handlers/client-log_del.rb",
-			"subscribers": ["del_log"],
-			"interval":300
+			"standalone": true,
+	      	"interval": 600
 		},
 		"user_cpu": {
 			"type": "metric",

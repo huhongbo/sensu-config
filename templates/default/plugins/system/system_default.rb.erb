@@ -30,30 +30,49 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
     end
     values
   end
+  
+  def cpu_quaitity_total
+    arry_sys,arry_total,arry_user,arry_wait = [],[],[],[]
+    cpu_sys,cpu_total,cpu_user,cpu_wait = 0,0,0,0
+    5.times do
+      cpu = Sigar.new.cpu
+      arry_sys << cpu.sys
+      arry_total << cpu.total
+      arry_user << cpu.user
+      arry_wait << cpu.wait
+      sleep 1
+    end
+    (0..4).each do |x|
+      if x < 4
+        cpu_sys += (arry_sys[x + 1] - arry_sys[x])
+        cpu_total += (arry_total[x + 1] - arry_total[x])
+        cpu_user += (arry_user[x + 1] - arry_user[x])
+        cpu_wait += (arry_wait[x + 1] - arry_wait[x])
+      end
+    end
+    return cpu_sys/4, cpu_total/4, cpu_user/4, cpu_wait/4
+  end
 
   def run
     dname = "system"   
     sigar = Sigar.new
     sys_info = sigar.sys_info.name.downcase
-    cpu, mem, swap = sigar.cpu, sigar.mem, sigar.swap 
+    mem, swap = sigar.mem, sigar.swap 
 
     if sys_info == "hpux"
-      sar_value = convert_integers(`sar -u 1|tail -n1`.split(" "))
+      sar_value = convert_integers(`sar -u 1 5|tail -n1`.split(" "))
       cpu_user = sar_value[1]
       cpu_sys = sar_value[2]
       cpu_wait = sar_value[3]
       cup_idle = sar_value[4]
-    else             
-      cpu_user, cpu_sys, cpu_wait, cpu_total = cpu.user, cpu.sys, cpu.wait, cpu.total   
-      sleep 1
+    else
+      cpu_sys, cpu_total, cpu_user, cpu_wait = cpu_quaitity_total
+      
+      #puts cpu_sys, cpu_total, cpu_user, cpu_wait
     
-      cpu_total = sigar.cpu.total - cpu_total
-      cpu_user = (sigar.cpu.user - cpu_user).to_f / cpu_total
-      cpu_user = sprintf_int(cpu_user)
-      cpu_sys = (sigar.cpu.sys - cpu_sys).to_f / cpu_total
-      cpu_sys = sprintf_int(cpu_sys)
-      cpu_wait = (sigar.cpu.wait - cpu_wait).to_f / cpu_total
-      cpu_wait = sprintf_int(cpu_wait)  
+      cpu_user = sprintf_int(cpu_user.to_f / cpu_total.to_f)
+      cpu_sys = sprintf_int(cpu_sys.to_f / cpu_total.to_f)
+      cpu_wait = sprintf_int(cpu_wait.to_f / cpu_total.to_f)  
         
       cpu_s = cpu_user.to_i + cpu_wait.to_i  + cpu_sys.to_i
       cup_idle = 100 - cpu_s

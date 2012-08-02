@@ -7,7 +7,7 @@
 	<% if node["tags"].include?("cpu") %>
 	  "user_cpu",
 	<% end %>
-	  "del_log"<% if node["platform"] == "hpux" %>,
+	<% if node["platform"] == "hpux" %>
 	  "hpux"
 	<% end %>
   	]
