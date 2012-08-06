@@ -52,9 +52,10 @@ class Hba < Sensu::Plugin::Metric::CLI::Graphite
       arry, i = aix_hba
       unless arry[1] == nil 
         (1..(i-1)).each do |x|
-          f = arry[x].split(",")          
+          f = arry[x].split(",")
+          fcs_name =  "fcs#{f[0].scan(/\d+/)[-1]}"          
           metrics = {
-            "#{f[0]}" => {
+            "#{fcs_name}" => {
               :iops => f[1],
               :rmbs => f[2].to_i / 2048,
               :wmbs => f[3].to_i / 2048
@@ -71,9 +72,10 @@ class Hba < Sensu::Plugin::Metric::CLI::Graphite
       arry, i = hpux_hba
       unless arry[0] == nil
         (0..(i-1)).each do |x|
-          f = arry[x].split(" ")          
+          f = arry[x].split(" ")
+          fcs_name =  "fcs#{f[1].scan(/\d+/)[-1]}"          
           metrics = {
-            "#{f[1]}" => {
+            "#{fcs_name}" => {
               :iops => f[4],
               :rmbs => f[7],
               :wmbs => f[8]
