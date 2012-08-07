@@ -2,6 +2,7 @@
 # system default plugin
 # fix cup idle value
 # code dn365
+# v0.02
 
 require 'rubygems' if RUBY_VERSION < '1.9.0'
 require 'sensu-plugin/metric/cli'
@@ -59,7 +60,7 @@ class SystemDefaultGraphite < Sensu::Plugin::Metric::CLI::Graphite
     sys_info = sigar.sys_info.name.downcase
     mem, swap = sigar.mem, sigar.swap 
 
-    if sys_info == "hpux"
+    if sys_info == "hpux" or sys_info == "aix"
       sar_value = convert_integers(`sar -u 1 5|tail -n1`.split(" "))
       cpu_user = sar_value[1]
       cpu_sys = sar_value[2]
