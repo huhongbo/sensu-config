@@ -60,14 +60,12 @@ start()
 			echo "$prog is running"
 		else
 			echo "$prog start ..."
+			rm -f pidfile
 			$client_path -b -l $logfile -p $pidfile
 		fi
 	else
-		if [ -d "pid_id_file" ]; then
-			echo "$pidfile not find, $prog runing add pid file"
-			echo "$pid" > $pidfile
-		else
 			echo "$prog start ..."
+			rm -f pidfile
 			$client_path -b -l $logfile -p $pidfile
 		fi
 	fi
