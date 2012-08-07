@@ -28,33 +28,30 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
 
   def run
     dname = "system"
-    if `uname`.include?("HP-UX")
-      ps = `UNIX95=1 ps -Ax -o pid,pcpu,user,vsz | grep -v PID`
-      psuser = `UNIX95=1 ps -Ax -o pid,pcpu,user,vsz | grep -v PID| awk '{print $3}'`.split(" ")
-    elsif `uname`.include?("AIX")
-      ps = `ps -eo pid,pcpu,user,rssize | grep -v PID`
-      psuser = `ps -eo pid,pcpu,user,rssize | grep -v PID | awk '{print $3}'`.split(" ")
-    elsif `uname`.include?("Linux")
-      ps = `ps -eo pid,pcpu,user,vsz | grep -v PID`
-      psuser = `ps -eo pid,pcpu,user,vsz | grep -v PID|awk '{print $3}'`.split(" ")
+    u_dir = "users"
+    if %x[uname].include?("HP-UX")
+        ps = %x[UNIX95=1 ps -Ax -o pid,pcpu,user,vsz | grep -v PID]
+    elsif %x[uname].include?("AIX")
+        ps = %x[ps -eo pid,pcpu,user,rssize | grep -v PID]
+    elsif %x[uname].include?("Linux")
+        ps = %x[ps -eo pid,pcpu,user,vsz | grep -v PID]
+    end    
+    user_arry = []
+    ps.each_line do |pp|
+      user_arry << pp.split(" ")[2]
     end
-    psuser.uniq.each do |name|
+    user = user_arry.uniq
+    user.each do |name|
       count, cpu_total, mem_total = 0, 0, 0
-      ps.each_line do |f|
-        aa = f.split(" ")
-        cpu = aa[1].to_i
-        user = aa[2].to_s
-        memory = aa[3].to_i
-
-        if name == user
-          count = count + 1  
-          cpu_total += cpu
-          mem_total += memory
+      ps.each_line do |pp|
+        if pp.split(" ")[2] == name
+          count += 1
+          cpu_total += pp.split(" ")[1].to_i
+          mem_total += pp.split(" ")[3].to_i
         end
       end
-      
-      timestamp = Time.now.to_i
-      
+            
+      timestamp = Time.now.to_i  
       mate = {
         :"#{name}" => {
           :cpu_total => cpu_total,
@@ -62,10 +59,9 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
           :count => count
         }
       }
-      
-      mate.each do |parent, children|
+      mate.each do |parent,children|
         children.each do |child,value|
-          output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, "users", parent, child].join("."), value, timestamp
+          output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, u_dir, parent, child].join("."), value, timestamp
         end
       end
     end  

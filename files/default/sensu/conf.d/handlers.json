@@ -12,6 +12,10 @@
 			"type": "pipe",
 			"command": "/etc/sensu/handlers/system_event_handler.rb"
 		},
+		"gelf": {
+		     "type": "pipe",
+		     "command": "/etc/sensu/handlers/gelf.rb"
+		},
 		"graphite":{
 			"type":"amqp",
 			"exchange":{
