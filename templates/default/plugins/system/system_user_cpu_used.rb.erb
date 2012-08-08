@@ -42,6 +42,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
     end
     user = user_arry.uniq
     user.each do |name|
+      unless name == nil
       count, cpu_total, mem_total = 0, 0, 0
       ps.each_line do |pp|
         if pp.split(" ")[2] == name
@@ -53,7 +54,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
             
       timestamp = Time.now.to_i  
       mate = {
-        :"#{name}" => {
+        "#{name}" => {
           :cpu_total => cpu_total,
           :mem_total => memd_percent(mem_total),
           :count => count
@@ -63,6 +64,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
         children.each do |child,value|
           output [<% if node["system"] == nil %>"Zmcc",<% else %><% unless node["system"]["Business"] != nil %>"Zmcc", <% else %>"<%= node["system"]["Business"] %>",<% end %><% end %>config[:scheme], dname, u_dir, parent, child].join("."), value, timestamp
         end
+      end
       end
     end  
     ok
