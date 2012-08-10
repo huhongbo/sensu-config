@@ -1,0 +1,19 @@
+{
+	"checks": {
+		"filesystem_event": {	  	
+	      	"command": "/etc/sensu/plugins/check_system_event.rb -f",
+	      	"standalone": true,
+	      	"interval": 600
+		},
+		"memory_event": {
+			"command": "/etc/sensu/plugins/check_system_event.rb -m",
+			"standalone": true,
+	      	"interval": 300
+		},
+		"swap_event": {	  	
+	      	"command": "/etc/sensu/plugins/check_system_event.rb -s",
+	      	"standalone": true,
+	      	"interval": 300
+		}
+	}
+}
