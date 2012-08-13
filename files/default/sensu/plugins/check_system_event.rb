@@ -100,13 +100,18 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       sprintf("%.0f", num*100)
     end
 
-    def memory_used(free,po)
+    def memory_used(sys_type,free,po)
       sigar = Sigar.new
       vmstat = %x[vmstat | tail -n1]
       mem = sigar.mem
 
-      mem_actual = mem.actual_used 
-      mem_precent = sprintf_int(mem_actual / mem.total).to_i 
+      mem_actual = mem.actual_used.to_f
+      case sys_type
+      when "aix","linux"
+        mem_precent = sprintf_int(mem_actual / mem.total).to_i
+      when "hpux"
+        mem_precent = sprintf_int(mem.used.to_f / mem.total).to_i
+      end
       mem_free = vmstat.split(" ")[free].to_i / 1024
       swap_po = vmstat.split(" ")[po].to_i 
       #return mem_precent,swap_precent,mem_free,swap_so
@@ -156,11 +161,11 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       elsif config[:memory]
         case uname
         when /Linux/
-          memory_used(4,7)
+          memory_used("linux",4,7)
         when /AIX/
-          memory_used(3,6)
+          memory_used("aix",3,6)
         when /HP-UX/
-          memory_used(4,8)
+          memory_used("hpux",4,8)
         end
       elsif config[:swap]
         swap_used
