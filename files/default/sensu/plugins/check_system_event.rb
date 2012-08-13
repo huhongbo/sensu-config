@@ -119,14 +119,8 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       #
       if mem_precent >= 79 && mem_free <= 400 && swap_po >= 400
         critical msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
-      elsif (mem_precent >= 79 && mem_free <= 400) || (mem_free <= 400 && swap_po >= 400) || (mem_precent >= 79 && swap_po >= 400)
-        if mem_precent >= 79 && mem_free <= 400
-          warning msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB"
-        elsif (mem_free <= 400 && swap_po >= 400)
-          warning msg = "mem_free:#{mem_free}MB; swap_po:#{swap_po}"
-        else
-          warning msg = "mem_precent:#{mem_precent}%; swap_po:#{swap_po}"
-        end
+      elsif (mem_precent >= 79 && mem_free <= 400 && swap_po >=100)
+        warning msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
       else
         ok msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
       end 
@@ -137,9 +131,9 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       swap = sigar.swap
       swap_precent = sprintf_int(swap.used / swap.total).to_i
 
-      if swap_precent >= 98
+      if swap_precent >= 99
         critical msg = "Swap precent: #{swap_precent}%"
-      elsif swap_precent >= 90
+      elsif swap_precent >= 95
         warning msg = "Swap precent: #{swap_precent}%"
       else
         ok msg = "Swap precent: #{swap_precent}%"
