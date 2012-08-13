@@ -43,7 +43,7 @@
 			"interval":60
 			},
 		"del_log": {
-			"command": "/etc/sensu/handlers/client-log_del.rb",
+			"command": "/etc/sensu/plugins/client-log_del.rb",
 			"standalone": true,
 	      	"interval": 600
 		},
