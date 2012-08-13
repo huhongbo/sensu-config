@@ -4,19 +4,19 @@
 			"handlers":["default"],
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -f",
 	      	"standalone": true,
-	      	"interval": 600
+	      	"interval": 60
 		},
 		"memory_event": {
 			"handlers":["default"],
 			"command": "/etc/sensu/plugins/check_system_event.rb -m",
 			"standalone": true,
-	      	"interval": 300
+	      	"interval": 60
 		},
 		"swap_event": {
 		 	"handlers":["default"],
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -s",
 	      	"standalone": true,
-	      	"interval": 300
+	      	"interval": 60
 		}
 	}
 }
