@@ -1,11 +1,13 @@
 {
 	"checks": {
-		"cpu": {	  	
+		"cpu": {
+			"handlers":["default"],	  	
 	      	"command": "/etc/sensu/plugins/check_warning.rb -t 'sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys)' -s 300 -w 85 -c 95",
 	      	"standalone": true,
 	      	"interval": 300
 		},
 		"stdev_cpu": {
+			"handlers":["default"],
 			"command": "/etc/sensu/plugins/check_warning.rb -t 'stdev(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,60)' -s 600 -w 20 -c 25 -r",
 			"standalone": true,
 	      	"interval": 600

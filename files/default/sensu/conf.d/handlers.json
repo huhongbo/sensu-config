@@ -2,11 +2,7 @@
 	"handlers":{
 		"default":{
 			"type":"set",
-			"handlers":["stdout"]
-		},
-		"stdout":{
-			"type":"pipe",
-			"command":"echo hello"
+			"handlers":["gelf"]
 		},
 		"event":{
 			"type": "pipe",
