@@ -83,7 +83,11 @@ class CheckGraph < Sensu::Plugin::Check::CLI
       data = f["datapoints"].reject {|k,v| [nil].include?(k) }  
       data.map {|k,v| arry << k }
     end
-    return sprintf("%.2f", arry.max)
+    unless arry.max == nil
+      return sprintf("%.2f", arry.max) 
+    else
+      return 0
+    end
   end
   
   def last_data(file)
