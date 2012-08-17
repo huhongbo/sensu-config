@@ -4,21 +4,21 @@
 			"handlers":["default"],
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -f",
 	      	"subscribers":["system"],
-	      	"notification":"Filesystem Full"
+	      	"notification":"Filesystem Full",
 	      	"interval": 60
 		},
 		"memory_event": {
 			"handlers":["default"],
 			"command": "/etc/sensu/plugins/check_system_event.rb -m",
 			"subscribers":["system"],
-			"notification":"Memory High"
+			"notification":"Memory High",
 	      	"interval": 60
 		},
 		"swap_event": {
 		 	"handlers":["default"],
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -s",
 	      	"subscribers":["system"],
-	      	"notification":"Swap High"
+	      	"notification":"Swap High",
 	      	"interval": 60
 		}
 	}
