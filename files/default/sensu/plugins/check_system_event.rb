@@ -55,28 +55,36 @@ class CheckSystem < Sensu::Plugin::Check::CLI
         unless mount_name =~ /\/dev|db2|oradata|dbdata|media|proc/
             unless mount_name =~ /arch/
               if disk_size > 2048
-                if disk_free <= 2048 && disk_used > 90  
-                  message << "warning:#{mount_name} total:#{disk_size}MB disk used:#{disk_used}% free space:#{disk_free}MB"
+                if disk_free <= 2048 && disk_used > 90 && disk_free > 1024
+                  message << "warning:#{mount_name} used:#{disk_used}% free:#{disk_free}MB"
+                elsif disk_free <=1024 && disk_used >90
+                  message << "critical:#{mount_name} used:#{disk_used}% free:#{disk_free}MB"
                 else
                   message << "ok:#{mount_name}"
                 end
               else
                 if disk_used > 90
-                  message << "warning:#{mount_name} total:#{disk_size}MB disk used:#{disk_used}%"
+                  message << "warning:#{mount_name} used:#{disk_used}%"
+                elsif disk_used > 95
+                  message << "critical:#{mount_name} used:#{disk_used}%"
                 else
                   message << "ok:#{mount_name}"
                 end     
               end
             else
               if disk_size > 2048
-                if disk_free <= 2048 && disk_used > 80
-                  message << "warning:#{mount_name} total:#{disk_size}MB disk used:#{disk_used}% free space:#{disk_free}MB"
+                if disk_free <= 2048 && disk_used > 80 && disk_free > 1024
+                  message << "warning:#{mount_name} used:#{disk_used}% free:#{disk_free}MB"
+                elsif disk_free <=1024 && disk_used >80
+                  message << "critical:#{mount_name} used:#{disk_used}% free:#{disk_free}MB"
                 else
                   message << "ok:#{mount_name}"
                 end
               else
                 if disk_used > 80
-                  message << "warning:#{mount_name} total:#{disk_size}MB disk used:#{disk_used}%"
+                  message << "warning:#{mount_name} used:#{disk_used}%"
+                elsif disk_used > 90
+                  message << "critical:#{mount_name} used:#{disk_used}%"
                 else
                   message << "ok:#{mount_name}"
                 end
@@ -84,15 +92,18 @@ class CheckSystem < Sensu::Plugin::Check::CLI
             end
         end
       end
-        warning_count,ok_count = [],[]
+        warning_count,ok_count,critical_count = [],[],[]
         message.each do |m|     
-          warning_count << m if m.include?("warning")
-          ok_count << m if m.include?("ok")
+          warning_count << m.sub(/warning:(.*)/,'\1') if m.include?("warning")
+          ok_count << m.sub(/ok:(.*)/,'\1') if m.include?("ok")
+          critical_count << m.sub(/critical:(.*)/,'\1') if m.include?("critical")
         end
-        unless warning_count[0] == nil
+        if critical_count[0] != nil
+          critical msg = "#{critical_count[0..-1].join("; ")}"
+        elsif warning_count[0] != nil
           warning msg = "#{warning_count[0..-1].join("; ")}"
         else
-          ok msg = "#{ok_count[0..-1].join("; ")}"
+          ok msg = "OK"
         end
     end
     
@@ -118,11 +129,11 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       #puts "mem:#{mem_actual / (1024*1024) } free:#{mem_free}"
       #
       if mem_precent >= 79 && mem_free <= 400 && swap_po >= 400
-        critical msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
+        critical msg = "Memory:#{mem_precent}%; free:#{mem_free}MB"
       elsif (mem_precent >= 79 && mem_free <= 400 && swap_po >=100)
-        warning msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
+        warning msg = "Memory: #{mem_precent}%; free:#{mem_free}MB"
       else
-        ok msg = "mem_precent:#{mem_precent}%; mem_free:#{mem_free}MB; swap_po:#{swap_po}"
+        ok msg = "Memory: #{mem_precent}%; free:#{mem_free}MB"
       end 
     end
 
@@ -132,11 +143,11 @@ class CheckSystem < Sensu::Plugin::Check::CLI
       swap_precent = sprintf_int(swap.used / swap.total).to_i
 
       if swap_precent >= 99
-        critical msg = "Swap precent: #{swap_precent}%"
+        critical msg = "Swap: #{swap_precent}%"
       elsif swap_precent >= 95
-        warning msg = "Swap precent: #{swap_precent}%"
+        warning msg = "Swap: #{swap_precent}%"
       else
-        ok msg = "Swap precent: #{swap_precent}%"
+        ok msg = "Swap: #{swap_precent}%"
       end
     end
     

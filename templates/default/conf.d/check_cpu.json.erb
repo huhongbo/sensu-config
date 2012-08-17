@@ -2,14 +2,16 @@
 	"checks": {
 		"cpu": {
 			"handlers":["default"],	  	
-	      	"command": "/etc/sensu/plugins/check_warning.rb -t 'sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys)' -s 300 -w 85 -c 95",
-	      	"standalone": true,
+	      	"command": "/etc/sensu/plugins/check_graph.rb -t 'sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys)' -s 300 -w 85 -c 95 -n 'CPU avg usage'",
+	      	"subscribers":["system"],
+	      	"notification":"CPU AVG HIGH",
 	      	"interval": 300
 		},
 		"stdev_cpu": {
 			"handlers":["default"],
-			"command": "/etc/sensu/plugins/check_warning.rb -t 'stdev(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,60)' -s 600 -w 20 -c 25 -r",
-			"standalone": true,
+			"command": "/etc/sensu/plugins/check_graph.rb -t 'stdev(movingAverage(sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys),60),60)' -s 700 -w 8 -c 10 -r -n 'CPU stdev change'",
+			"subscribers":["system"],
+			"notification":"CPU Stdev HIGH",
 	      	"interval": 600
 		}
 	}

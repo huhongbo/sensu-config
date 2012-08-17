@@ -9,7 +9,7 @@ require 'sensu-plugin/check/cli'
 require "open-uri"
 require "yajl"
 
-class CheckMyConfig < Sensu::Plugin::Check::CLI
+class CheckGraph < Sensu::Plugin::Check::CLI
 
   option :base_url,
     :short => '-u',
@@ -44,6 +44,10 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
     :short => '-W',
     :long => '--holt-winters',
     :description => 'Perform a Holt-Winters check'
+  option :alias,
+    :short => '-n=VALUE',
+    :long => '--alias-name',
+    :description => 'alias the target name'
   option :help,
     :short => "-h",
     :long => "--help",
@@ -82,7 +86,17 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
     return sprintf("%.2f", arry.max)
   end
   
-  
+  def last_data(file)
+    file.each do |f|
+      data = f["datapoints"].reject {|k,v| [nil].include?(k) }
+      data.each_with_index do |(k,v),index|
+        if index == data.length - 1
+          return k
+        end
+      end
+    end
+  end
+
   def holt_grap_data(file)
     i, x = 0, 0
     upper_data, lower_data, t_value = 0, 0, 0
@@ -117,24 +131,28 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
     base_url = config[:base_url]
     from_time = config[:time]
     target = config[:target]
+    if config[:alias] == nil
+      alias_name = target
+    else
+      alias_name = config[:alias]
+    end
     
     if base_url.nil? or from_time.nil? or target.nil?
-      unknown msg = "Not find url or time or target, please -h" 
+      unknown msg = "Not find url and time and target, please -h" 
     else
       if config[:holt_winters]
-        holt_url = "#{base_url}/render?from=-#{from_time}sen&until=now&target=#{target}&target=holtWintersConfidenceBands(#{target})&format=json"
+        holt_url = "#{base_url}/render?from=-#{from_time}sen&until=now&target=#{target}&target=holtWintersConfidenceBands(#{alias_name})&format=json"
         holt_file = read_url(holt_url)
         upper_data, lower_data, t_value = holt_grap_data(holt_file)
         if (t_value > upper_data) or (t_value < lower_data)
           if t_value > upper_data
-            critical msg = "#{target} holtWintersConfidenceUpper data: #{t_value} > #{upper_data}"
+            critical msg = "#{alias_name} holtWintersConfidenceUpper: #{t_value} > #{upper_data}"
           else
-            warning msg = "#{target} holtWintersConfidenceLower data: #{t_value} < #{lower_data}"
+            warning msg = "#{alias_name} holtWintersConfidenceLower: #{t_value} < #{lower_data}"
           end
         else
-          ok msg = "#{target} ok: #{t_value}"
+          ok msg = "#{alias_name} DATA: #{t_value}"
         end
-        
       elsif config[:diff] != nil 
          diff1_url = "#{base_url}/render?from=-#{from_time}sen&until=now&target=#{target}&format=json"
          diff2_url = "#{base_url}/render?from=-#{from_time}sen&until=now&target=#{config[:diff]}&format=json"
@@ -144,24 +162,24 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
          if config[:reverse] == true
            if config[:crit] != nil || config[:warn] != nil
              if config[:crit] == nil
-               if diff_data >= config[:warn].to_i
-                 warning msg = "#{target} warning: #{diff_data} >= #{config[:warn]}"
+               if diff_data > config[:warn].to_i
+                 warning msg = "#{alias_name}: #{diff_data} > #{config[:warn]}"
                else
-                 ok msg = "#{target} ok: #{diff_data} < #{config[:warn]} "
+                 ok msg = "#{alias_name}: #{diff_data} < #{config[:warn]} "
                end
              elsif config[:warn] == nil
-               if diff_data >= config[:crit].to_i
-                 critical msg = "#{target} critical: #{diff_data} >= #{config[:crit]}"
+               if diff_data > config[:crit].to_i
+                 critical msg = "#{alias_name}: #{diff_data} > #{config[:crit]}"
                else
-                 ok msg "#{target} ok: #{diff_data} < #{config[:crit]}"
+                 ok msg "#{alias_name}: #{diff_data} < #{config[:crit]}"
                end
              else
-               if diff_data >= config[:crit].to_i
-                 critical msg = "#{target} critical: #{diff_data} >= #{config[:crit]}"
-               elsif diff_data >= config[:warn].to_i
-                 warning msg = "#{target} warning: #{config[:crit]} < #{diff_data} >= #{config[:warn]}"
+               if diff_data > config[:crit].to_i
+                 critical msg = "#{alias_name}: #{diff_data} > #{config[:crit]}"
+               elsif diff_data > config[:warn].to_i
+                 warning msg = "#{alias_name}: #{diff_data} > #{config[:warn]}"
                else
-                 ok msg = "#{target} ok: #{diff_data}"
+                 ok msg = "#{alias_name}: #{diff_data}"
                end
              end
            else
@@ -177,24 +195,24 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
           data_value = stdev_data(file)
           if config[:crit] != nil || config[:warn] != nil
             if config[:crit] == nil
-              if data_value.to_i >= config[:warn].to_i
-                warning msg = "#{target} standard warning: #{data_value} >= #{config[:warn]}"
+              if data_value.to_i > config[:warn].to_i
+                warning msg = "#{alias_name}: #{data_value} > #{config[:warn]}"
               else
-                ok msg = "#{target} standard ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             elsif config[:warn] == nil
-              if data_value.to_i >= config[:crit].to_i
-                critical msg = "#{target} standard critical: #{data_value} >= #{config[:crit]}"
+              if data_value.to_i > config[:crit].to_i
+                critical msg = "#{alias_name}: #{data_value} > #{config[:crit]}"
               else
-                ok msg = "#{target} standard ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             else
-              if data_value.to_i >= config[:crit].to_i
-                critical msg = "#{target} standard critical: #{data_value} >= #{config[:crit]}"
-              elsif data_value.to_i >= config[:warn].to_i
-                warning msg = "#{target} standard warning: #{config[:crit]} < #{data_value} >= #{config[:warn]}"
+              if data_value.to_i > config[:crit].to_i
+                critical msg = "#{alias_name}: #{data_value} > #{config[:crit]}"
+              elsif data_value.to_i > config[:warn].to_i
+                warning msg = "#{alias_name}: #{data_value} > #{config[:warn]}"
               else
-                ok msg = "#{target} standard ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             end
           else
@@ -204,24 +222,24 @@ class CheckMyConfig < Sensu::Plugin::Check::CLI
           data_value = grap_data(file)
           if config[:crit] != nil || config[:warn] != nil
             if config[:crit] == nil
-              if data_value.to_i >= config[:warn].to_i
-                warning msg = "#{target} warning: #{data_value} >= #{config[:warn]}"
+              if data_value.to_i > config[:warn].to_i
+                warning msg = "#{alias_name}: #{data_value} > #{config[:warn]}"
               else
-                ok msg = "#{target} ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             elsif config[:warn] == nil
-              if data_value.to_i >= config[:crit].to_i
-                critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
+              if data_value.to_i > config[:crit].to_i
+                critical msg = "#{alias_name}: #{data_value} > #{config[:crit]}"
               else
-                ok msg = "#{target} ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             else
-              if data_value.to_i >= config[:crit].to_i
-                critical msg = "#{target} critical: #{data_value} >= #{config[:crit]}"
-              elsif data_value.to_i >= config[:warn].to_i
-                warning msg = "#{target} warning: #{config[:crit]} < #{data_value} >= #{config[:warn]}"
+              if data_value.to_i > config[:crit].to_i
+                critical msg = "#{alias_name}: #{data_value} > #{config[:crit]}"
+              elsif data_value.to_i > config[:warn].to_i
+                warning msg = "#{alias_name}: #{data_value} > #{config[:warn]}"
               else
-                ok msg = "#{target} ok: #{data_value}"
+                ok msg = "#{alias_name}: #{data_value}"
               end
             end
           else
