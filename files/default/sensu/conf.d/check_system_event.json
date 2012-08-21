@@ -5,21 +5,24 @@
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -f",
 	      	"subscribers":["system"],
 	      	"notification":"Filesystem Full",
-	      	"interval": 60
+	      	"interval": 60,
+	      	"refresh": 3600
 		},
 		"memory_event": {
 			"handlers":["default"],
 			"command": "/etc/sensu/plugins/check_system_event.rb -m",
 			"subscribers":["system"],
 			"notification":"Memory High",
-	      	"interval": 60
+	      	"interval": 60,
+	      	"refresh": 3600
 		},
 		"swap_event": {
 		 	"handlers":["default"],
 	      	"command": "/etc/sensu/plugins/check_system_event.rb -s",
 	      	"subscribers":["system"],
 	      	"notification":"Swap High",
-	      	"interval": 60
+	      	"interval": 60,
+	      	"refresh": 3600
 		}
 	}
 }
