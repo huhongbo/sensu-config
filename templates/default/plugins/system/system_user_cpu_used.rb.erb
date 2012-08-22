@@ -24,6 +24,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
     memd = Sigar.new.mem
     memd_total = memd.total.to_f / 1024
     value = sprintf_int(memory_value.to_f / memd_total.to_f)
+    return value
   end
 
   def run
