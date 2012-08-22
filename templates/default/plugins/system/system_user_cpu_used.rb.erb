@@ -17,7 +17,7 @@ class SystemCpuUsed < Sensu::Plugin::Metric::CLI::Graphite
     :default => "#{Socket.gethostname}.cpu"
     
   def sprintf_int(num)
-    sprintf("%.0f", num*100)
+    return num != nil ? sprintf("%.0f", num.to_i * 100) : 0
   end
   
   def memd_percent(memory_value)
