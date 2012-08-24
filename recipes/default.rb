@@ -183,8 +183,8 @@ end
 if File.exist?("/var/log/sensu-client.log")
   file_time = File.mtime("/var/log/sensu-client.log").to_i
   time_now = Time.now.to_i
-  time_value = (time_now - file_time) / 60
-  unless time_value < 3
+  time_value = time_now - file_time)
+  unless time_value < 100
     service "sensu_client" do
       if (platform?("hpux"))
         provider Chef::Provider::Service::Hpux
