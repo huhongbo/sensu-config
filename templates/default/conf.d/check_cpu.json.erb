@@ -2,7 +2,7 @@
 	"checks": {
 		"cpu": {
 			"handlers":["default"],	  	
-	      	"command": "/etc/sensu/plugins/check_graph.rb -t 'sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys)' -s 300 -w 85 -c 95 -n 'CPU avg usage'",
+	      	"command": "/etc/sensu/plugins/check_graph.rb -t 'sumSeries(<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.user,<% if node["system"] == nil %>Zmcc.<% else %><% unless node["system"]["Business"] != nil %>Zmcc.<% else %><%= node["system"]["Business"] %>.<% end %><% end %><%= node.hostname %>.system.cpu.sys)' -s 300 -w 90 -c 95 -n 'CPU avg usage'",
 	      	"subscribers":["system"],
 	      	"notification":"CPU AVG HIGH",
 	      	"interval": 300,
