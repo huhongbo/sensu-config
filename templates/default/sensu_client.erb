@@ -1,4 +1,4 @@
-<% unless node["platform"] == "ubuntu" %>
+<% unless node["os"] == "linux" %>
 #!/usr/bin/sh
 <% else %>
 #!/bin/sh
